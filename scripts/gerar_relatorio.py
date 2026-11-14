@@ -67,14 +67,14 @@ def exemplo_fila() -> str:
 
 
 def resumo_producao() -> str:
-    resumo = json.loads((AMOSTRAS / "resumo-execucao-producao.json").read_text(encoding="utf-8"))
+    resumo = json.loads((AMOSTRAS / "resumo-execucao-producao-real.json").read_text(encoding="utf-8"))
     return html.escape(json.dumps({k: resumo[k] for k in ("run_id", "simulacao", "inicio", "fim", "status",
                                                           "contadores", "alertas")}, ensure_ascii=False, indent=1))
 
 
 def figura_integracao() -> str:
     extras = []
-    for nome, legenda in (("mvp-integracao.png", "Figura 3: relatos criados e status alterados pelo robô no MVP."),
+    for nome, legenda in (("mvp-integracao.png", "Figura 3: MVP depois da execução real: os 4 relatos importados pelo robô aparecem no mapa e na lista, marcados como demonstração e com o canal de origem."),
                           ("actions-execucao.png", "Figura 4: execução agendada no GitHub Actions.")):
         if (RAIZ / "assets" / nome).exists():
             extras.append(f'<figure><img src="../../assets/{nome}"><figcaption>{legenda}</figcaption></figure>')

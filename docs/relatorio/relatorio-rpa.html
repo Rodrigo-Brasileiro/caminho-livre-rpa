@@ -138,7 +138,7 @@
   <tr><td>Chuva prevista ≥ 5 mm nas próximas 24 h</td><td>+10</td></tr>
   <tr><td>Outros relatos abertos a até 30 m (recorrência)</td><td>+10 cada (teto 20)</td></tr>
 </table>
-<p><b>Classificação:</b> ALTA ≥ 70 (prazo sugerido de 2 dias) · MÉDIA ≥ 45 (7 dias) · BAIXA &lt; 45 (15 dias). Cada item da fila carrega a lista de motivos. Exemplo real da execução contra a produção:</p>
+<p><b>Classificação:</b> ALTA ≥ 70 (prazo sugerido de 2 dias) · MÉDIA ≥ 45 (7 dias) · BAIXA &lt; 45 (15 dias). Cada item da fila carrega a lista de motivos. Exemplo real da execução contra a produção (os relatos sintéticos de 13/11 viram ALTA quando completam 3 dias abertos; o agendamento de hora em hora faz a mudança sozinho):</p>
 <pre>contexto: chuva 24 h = 0.6 mm · locais sensíveis = 55
 
 MEDIA score=55  travessia_barreira  id=08fc1e17
@@ -149,9 +149,25 @@ MEDIA score=50  rampa_bloqueada     id=51b43f6d
       · categoria rampa_bloqueada (+40)
       · a 126 m de escola &#x27;Colégio Objetivo&#x27; (+10)
 
+MEDIA score=50  rampa_bloqueada     id=b96eb6ba
+      · categoria rampa_bloqueada (+40)
+      · a 153 m de acesso ao metrô &#x27;Metro Trianon MASP&#x27; (+10)
+
 MEDIA score=45  calcada_obstruida   id=79465dfd
       · categoria calcada_obstruida (+25)
-      · a 5 m de acesso ao metrô &#x27;sem nome&#x27; (+20)</pre>
+      · a 5 m de acesso ao metrô &#x27;sem nome&#x27; (+20)
+
+MEDIA score=45  calcada_obstruida   id=9489ac27
+      · categoria calcada_obstruida (+25)
+      · a 94 m de escola &#x27;Objetivo&#x27; (+20)
+
+MEDIA score=45  travessia_barreira  id=4280a70d
+      · categoria travessia_barreira (+35)
+      · a 151 m de acesso ao metrô &#x27;sem nome&#x27; (+10)
+
+BAIXA score=35  calcada_obstruida   id=c57d3761
+      · categoria calcada_obstruida (+25)
+      · a 115 m de acesso ao metrô &#x27;Metrò Brigadeiro&#x27; (+10)</pre>
 <h3>5.4 Ação e pessoa no circuito</h3>
 <p>Só relatos <b>ALTA ainda pendentes</b> mudam para <code>em_analise</code>, via <code>PATCH</code> com o token de gestor. O robô <b>nunca</b> marca <code>resolvido</code> nem <code>descartado</code>: essas decisões afetam o cidadão e ficam com uma pessoa. Há um teste automatizado que garante isso.</p>
 
@@ -205,12 +221,12 @@ MEDIA score=45  calcada_obstruida   id=79465dfd
 12:43:59 WARN  http       nova_tentativa         tentativa 2 falhou (HTTP 503) destino=http://127.0.0.1:43897/health
 12:44:00 ERROR execucao   mvp_indisponivel       http://127.0.0.1:43897/health indisponível após 3 tentativa(
 12:44:00 ERROR execucao   fim                    status=FALHA</pre>
-<h3>Resumo da execução contra o MVP em produção (modo simulação)</h3>
+<h3>Resumo da execução real contra o MVP em produção (14/11/2026)</h3>
 <pre>{
- &quot;run_id&quot;: &quot;20261114T124317Z-7b83ea&quot;,
- &quot;simulacao&quot;: true,
- &quot;inicio&quot;: &quot;2026-11-14T12:43:17Z&quot;,
- &quot;fim&quot;: &quot;2026-11-14T12:43:53Z&quot;,
+ &quot;run_id&quot;: &quot;20261114T140115Z-9d54ac&quot;,
+ &quot;simulacao&quot;: false,
+ &quot;inicio&quot;: &quot;2026-11-14T14:01:15Z&quot;,
+ &quot;fim&quot;: &quot;2026-11-14T14:02:25Z&quot;,
  &quot;status&quot;: &quot;SUCESSO_COM_ALERTAS&quot;,
  &quot;contadores&quot;: {
   &quot;arquivos_lidos&quot;: 2,
@@ -220,9 +236,10 @@ MEDIA score=45  calcada_obstruida   id=79465dfd
   &quot;linhas_duplicadas&quot;: 1,
   &quot;linhas_lidas&quot;: 8,
   &quot;linhas_rejeitadas&quot;: 3,
-  &quot;linhas_simuladas&quot;: 4,
-  &quot;prioridade_media&quot;: 3,
-  &quot;relatos_avaliados&quot;: 3
+  &quot;prioridade_baixa&quot;: 1,
+  &quot;prioridade_media&quot;: 6,
+  &quot;relatos_avaliados&quot;: 7,
+  &quot;relatos_criados&quot;: 4
  },
  &quot;alertas&quot;: [
   &quot;importacao/arquivo_quarentena: colunas obrigatórias ausentes: categoria, latitude, longitude&quot;,
@@ -230,7 +247,8 @@ MEDIA score=45  calcada_obstruida   id=79465dfd
   &quot;importacao/linha_rejeitada: categoria desconhecida&quot;,
   &quot;importacao/linha_rejeitada: coordenada ausente ou não numérica&quot;,
   &quot;http/nova_tentativa: tentativa 1 falhou (HTTP 502)&quot;,
-  &quot;http/nova_tentativa: tentativa 2 falhou (HTTP 502)&quot;
+  &quot;http/nova_tentativa: tentativa 2 falhou (HTTP 502)&quot;,
+  &quot;http/nova_tentativa: tentativa 1 falhou (HTTP 504)&quot;
  ]
 }</pre>
 <p>As amostras completas estão em <code>logs/amostras/</code>. No agendamento, os logs de cada execução ficam como artefatos do GitHub Actions por 30 dias.</p>
@@ -244,7 +262,8 @@ MEDIA score=45  calcada_obstruida   id=79465dfd
 </table>
 <p>O resultado aparece no próprio MVP: os relatos importados viram pins novos no mapa e os de prioridade ALTA passam a "em análise", visível para o cidadão.</p>
 <figure><img src="../../assets/mvp-mapa-producao.png" alt="MVP Caminho Livre em produção"><figcaption>Figura 2: MVP em produção (https://caminholivre-gs.azurewebsites.net), que o robô consome e atualiza.</figcaption></figure>
-
+<figure><img src="../../assets/mvp-integracao.png"><figcaption>Figura 3: MVP depois da execução real: os 4 relatos importados pelo robô aparecem no mapa e na lista, marcados como demonstração e com o canal de origem.</figcaption></figure>
+<figure><img src="../../assets/actions-execucao.png"><figcaption>Figura 4: execução agendada no GitHub Actions.</figcaption></figure>
 
 <h2 class="quebra">9. Testes realizados</h2>
 <div class="kpis">
@@ -298,7 +317,7 @@ MEDIA score=45  calcada_obstruida   id=79465dfd
   <tr><td>LGPD</td><td>dado pessoal nao vai ao mvp nem ao log</td><td>✔ passou</td></tr>
   <tr><td>LGPD</td><td>remove telefone email cpf</td><td>✔ passou</td></tr>
 </table>
-<p>A saída completa está em <code>tests/evidencias/resultado-testes.txt</code>. Também houve execução manual contra a produção, em modo simulação, com os resultados reais da seção 7.</p>
+<p>A saída completa está em <code>tests/evidencias/resultado-testes.txt</code>. Também houve execuções contra a produção: em modo simulação, depois real pelo terminal (4 relatos criados, 1 duplicata barrada, 3 linhas rejeitadas, 1 arquivo em quarentena) e real pelo GitHub Actions (status SUCESSO, Figura 4).</p>
 
 <h2>10. Segurança e LGPD</h2>
 <ul>

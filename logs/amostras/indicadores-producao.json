@@ -1,18 +1,21 @@
 {
-  "relatos_recebidos": 1,
+  "relatos_recebidos": 5,
   "relatos_sinteticos_excluidos": 3,
   "relatos_revisados": 1,
   "relatos_resolvidos": 0,
-  "taxa_resolucao": null,
+  "taxa_resolucao": 0.0,
   "tempo_medio_ate_revisao_h": 0.0,
   "pendentes_ha_mais_de_7_dias": 0,
   "por_status": {
+    "pendente": 4,
     "descartado": 1
   },
   "por_categoria": {
-    "calcada_obstruida": 1
+    "calcada_obstruida": 3,
+    "travessia_barreira": 1,
+    "rampa_bloqueada": 1
   },
   "observacao": "Indicadores de processo. tempo_medio_ate_revisao_h usa a última atualização como aproximação.",
-  "gerado_em": "2026-11-14T12:43:53Z",
-  "run_id": "20261114T124317Z-7b83ea"
+  "gerado_em": "2026-11-14T14:02:25Z",
+  "run_id": "20261114T140115Z-9d54ac"
 }

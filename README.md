@@ -163,6 +163,8 @@ ALTA ≥ 70 (prazo sugerido de 2 dias), MÉDIA ≥ 45 (7 dias), BAIXA < 45 (15 d
 
 O resultado pode ser conferido no próprio mapa: os relatos importados aparecem como pins novos e os de prioridade ALTA mudam para "em análise".
 
+Evidências da execução real de 14/11/2026: [MVP com os relatos importados](assets/mvp-integracao.png), [execução no GitHub Actions](assets/actions-execucao.png) e [log da execução](logs/amostras/producao-execucao-real.jsonl).
+
 ## Testes
 
 ```bash

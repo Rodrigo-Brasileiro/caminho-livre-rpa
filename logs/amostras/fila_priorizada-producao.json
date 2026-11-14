@@ -1,7 +1,7 @@
 {
-  "gerado_em": "2026-11-14T12:43:53Z",
-  "run_id": "20261114T124317Z-7b83ea",
-  "simulacao": true,
+  "gerado_em": "2026-11-14T14:02:25Z",
+  "run_id": "20261114T140115Z-9d54ac",
+  "simulacao": false,
   "mvp": "https://caminholivre-gs.azurewebsites.net",
   "contexto": {
     "chuva_prevista_24h_mm": 0.6,
@@ -62,6 +62,30 @@
       }
     },
     {
+      "id": "b96eb6ba-8da0-422a-8061-2eab5855d503",
+      "categoria": "rampa_bloqueada",
+      "fonte": "cidadao",
+      "latitude": -23.5652,
+      "longitude": -46.6531,
+      "criado_em": "2026-11-14T14:01:15.949Z",
+      "status_antes": "pendente",
+      "status_depois": "pendente",
+      "prioridade": "MEDIA",
+      "score": 50,
+      "prazo_sugerido_dias": 7,
+      "motivos": [
+        "categoria rampa_bloqueada (+40)",
+        "a 153 m de acesso ao metrô 'Metro Trianon MASP' (+10)"
+      ],
+      "acao_do_robo": "mantido",
+      "local_sensivel_mais_proximo": {
+        "tipo": "acesso ao metrô",
+        "nome": "Metro Trianon MASP",
+        "distancia_m": 153.5,
+        "osm_id": "node/4128591678"
+      }
+    },
+    {
       "id": "79465dfd-57cc-42bf-9180-f177de24fc8f",
       "categoria": "calcada_obstruida",
       "fonte": "sintetico",
@@ -83,6 +107,78 @@
         "nome": "sem nome",
         "distancia_m": 5.2,
         "osm_id": "node/13792611618"
+      }
+    },
+    {
+      "id": "9489ac27-1d7d-478b-b57d-707a6b43d20b",
+      "categoria": "calcada_obstruida",
+      "fonte": "cidadao",
+      "latitude": -23.5639,
+      "longitude": -46.6508,
+      "criado_em": "2026-11-14T14:01:16.073Z",
+      "status_antes": "pendente",
+      "status_depois": "pendente",
+      "prioridade": "MEDIA",
+      "score": 45,
+      "prazo_sugerido_dias": 7,
+      "motivos": [
+        "categoria calcada_obstruida (+25)",
+        "a 94 m de escola 'Objetivo' (+20)"
+      ],
+      "acao_do_robo": "mantido",
+      "local_sensivel_mais_proximo": {
+        "tipo": "escola",
+        "nome": "Objetivo",
+        "distancia_m": 94.3,
+        "osm_id": "node/4947759384"
+      }
+    },
+    {
+      "id": "4280a70d-3596-4f6d-bdcf-69e6a0dd8ee2",
+      "categoria": "travessia_barreira",
+      "fonte": "cidadao",
+      "latitude": -23.5617,
+      "longitude": -46.656,
+      "criado_em": "2026-11-14T14:01:16.219Z",
+      "status_antes": "pendente",
+      "status_depois": "pendente",
+      "prioridade": "MEDIA",
+      "score": 45,
+      "prazo_sugerido_dias": 7,
+      "motivos": [
+        "categoria travessia_barreira (+35)",
+        "a 151 m de acesso ao metrô 'sem nome' (+10)"
+      ],
+      "acao_do_robo": "mantido",
+      "local_sensivel_mais_proximo": {
+        "tipo": "acesso ao metrô",
+        "nome": "sem nome",
+        "distancia_m": 151.8,
+        "osm_id": "node/13792611621"
+      }
+    },
+    {
+      "id": "c57d3761-28da-4a59-a289-60b1428e0f44",
+      "categoria": "calcada_obstruida",
+      "fonte": "cidadao",
+      "latitude": -23.5672,
+      "longitude": -46.6481,
+      "criado_em": "2026-11-14T14:01:16.333Z",
+      "status_antes": "pendente",
+      "status_depois": "pendente",
+      "prioridade": "BAIXA",
+      "score": 35,
+      "prazo_sugerido_dias": 15,
+      "motivos": [
+        "categoria calcada_obstruida (+25)",
+        "a 115 m de acesso ao metrô 'Metrò Brigadeiro' (+10)"
+      ],
+      "acao_do_robo": "mantido",
+      "local_sensivel_mais_proximo": {
+        "tipo": "acesso ao metrô",
+        "nome": "Metrò Brigadeiro",
+        "distancia_m": 115.6,
+        "osm_id": "node/3892325894"
       }
     }
   ]

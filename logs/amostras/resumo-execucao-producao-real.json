@@ -1,0 +1,32 @@
+{
+  "run_id": "20261114T140115Z-9d54ac",
+  "comando": "executar",
+  "simulacao": false,
+  "inicio": "2026-11-14T14:01:15Z",
+  "fim": "2026-11-14T14:02:25Z",
+  "status": "SUCESSO_COM_ALERTAS",
+  "contadores": {
+    "arquivos_lidos": 2,
+    "arquivos_processados": 1,
+    "arquivos_quarentena": 1,
+    "linhas_com_dado_pessoal_removido": 2,
+    "linhas_duplicadas": 1,
+    "linhas_lidas": 8,
+    "linhas_rejeitadas": 3,
+    "prioridade_baixa": 1,
+    "prioridade_media": 6,
+    "relatos_avaliados": 7,
+    "relatos_criados": 4
+  },
+  "alertas": [
+    "importacao/arquivo_quarentena: colunas obrigatórias ausentes: categoria, latitude, longitude",
+    "importacao/linha_rejeitada: fora do território do piloto",
+    "importacao/linha_rejeitada: categoria desconhecida",
+    "importacao/linha_rejeitada: coordenada ausente ou não numérica",
+    "http/nova_tentativa: tentativa 1 falhou (HTTP 502)",
+    "http/nova_tentativa: tentativa 2 falhou (HTTP 502)",
+    "http/nova_tentativa: tentativa 1 falhou (HTTP 504)"
+  ],
+  "erros": [],
+  "log": "robo-2026-11-14.jsonl"
+}

@@ -138,7 +138,7 @@
   <tr><td>Chuva prevista ≥ 5 mm nas próximas 24 h</td><td>+10</td></tr>
   <tr><td>Outros relatos abertos a até 30 m (recorrência)</td><td>+10 cada (teto 20)</td></tr>
 </table>
-<p><b>Classificação:</b> ALTA ≥ 70 (prazo sugerido de 2 dias) · MÉDIA ≥ 45 (7 dias) · BAIXA &lt; 45 (15 dias). Cada item da fila carrega a lista de motivos. Exemplo real da execução contra a produção:</p>
+<p><b>Classificação:</b> ALTA ≥ 70 (prazo sugerido de 2 dias) · MÉDIA ≥ 45 (7 dias) · BAIXA &lt; 45 (15 dias). Cada item da fila carrega a lista de motivos. Exemplo real da execução contra a produção (os relatos sintéticos de 13/11 viram ALTA quando completam 3 dias abertos; o agendamento de hora em hora faz a mudança sozinho):</p>
 <pre>$EXEMPLO_FILA_PRODUCAO</pre>
 <h3>5.4 Ação e pessoa no circuito</h3>
 <p>Só relatos <b>ALTA ainda pendentes</b> mudam para <code>em_analise</code>, via <code>PATCH</code> com o token de gestor. O robô <b>nunca</b> marca <code>resolvido</code> nem <code>descartado</code>: essas decisões afetam o cidadão e ficam com uma pessoa. Há um teste automatizado que garante isso.</p>
@@ -163,7 +163,7 @@
 <p>Cada evento é uma linha JSON em <code>logs/robo-AAAA-MM-DD.jsonl</code> com data e hora UTC, <code>run_id</code>, nível, etapa, evento, mensagem e referência (arquivo e linha, ou id do relato). Cada execução também grava um resumo com início, fim, status, contadores, alertas e erros. Antes de gravar, o robô remove os campos <code>contato</code>, <code>nome</code>, <code>telefone</code>, <code>email</code> e <code>descricao</code> e mascara telefone, e-mail e CPF em qualquer texto.</p>
 <h3>Trecho do log: demonstração local (sucesso, decisão e falha)</h3>
 <pre>$LOG_DEMO</pre>
-<h3>Resumo da execução contra o MVP em produção (modo simulação)</h3>
+<h3>Resumo da execução real contra o MVP em produção (14/11/2026)</h3>
 <pre>$RESUMO_PRODUCAO</pre>
 <p>As amostras completas estão em <code>logs/amostras/</code>. No agendamento, os logs de cada execução ficam como artefatos do GitHub Actions por 30 dias.</p>
 
@@ -190,7 +190,7 @@ $FIGURA_INTEGRACAO
   <tr><th style="width:14%">Tipo</th><th>Cenário testado</th><th style="width:11%">Resultado</th></tr>
 $TABELA_TESTES
 </table>
-<p>A saída completa está em <code>tests/evidencias/resultado-testes.txt</code>. Também houve execução manual contra a produção, em modo simulação, com os resultados reais da seção 7.</p>
+<p>A saída completa está em <code>tests/evidencias/resultado-testes.txt</code>. Também houve execuções contra a produção: em modo simulação, depois real pelo terminal (4 relatos criados, 1 duplicata barrada, 3 linhas rejeitadas, 1 arquivo em quarentena) e real pelo GitHub Actions (status SUCESSO, Figura 4).</p>
 
 <h2>10. Segurança e LGPD</h2>
 <ul>
