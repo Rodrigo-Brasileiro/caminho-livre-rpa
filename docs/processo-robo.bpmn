@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="defs_caminho_livre" targetNamespace="https://github.com/caminho-livre/rpa" exporter="caminho-livre-rpa" exporterVersion="1.0">
+  <bpmn:error id="erro_indisponivel" name="ServicoIndisponivel" errorCode="SERVICO_INDISPONIVEL" />
+  <bpmn:process id="robo_caminho_livre" name="Robô Caminho Livre: importação e triagem" isExecutable="false">
+    <bpmn:startEvent id="inicio" name="A cada hora (GitHub Actions)"><bpmn:outgoing>f_inicio_verificar</bpmn:outgoing><bpmn:timerEventDefinition id="timer_hora"><bpmn:timeCycle>R/PT1H</bpmn:timeCycle></bpmn:timerEventDefinition></bpmn:startEvent>
+    <bpmn:serviceTask id="verificar" name="Verificar MVP no ar (GET /health)"><bpmn:incoming>f_inicio_verificar</bpmn:incoming><bpmn:outgoing>f_verificar_gw_mvp</bpmn:outgoing></bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="gw_mvp" name="MVP no ar?"><bpmn:incoming>f_verificar_gw_mvp</bpmn:incoming><bpmn:outgoing>f_gw_mvp_ler_mvp</bpmn:outgoing><bpmn:outgoing>f_gw_mvp_falha</bpmn:outgoing></bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="falha" name="Registrar FALHA e avisar gestor"><bpmn:incoming>f_gw_mvp_falha</bpmn:incoming><bpmn:outgoing>f_falha_fim_falha</bpmn:outgoing></bpmn:serviceTask>
+    <bpmn:endEvent id="fim_falha" name="Execução em FALHA"><bpmn:incoming>f_falha_fim_falha</bpmn:incoming><bpmn:errorEventDefinition id="def_fim_falha" errorRef="erro_indisponivel" /></bpmn:endEvent>
+    <bpmn:serviceTask id="ler_mvp" name="Ler território e relatos (API do MVP)"><bpmn:incoming>f_gw_mvp_ler_mvp</bpmn:incoming><bpmn:outgoing>f_ler_mvp_gw_arquivo</bpmn:outgoing></bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="gw_arquivo" name="Há arquivo na entrada?"><bpmn:incoming>f_ler_mvp_gw_arquivo</bpmn:incoming><bpmn:incoming>f_merge_arq_gw_arquivo</bpmn:incoming><bpmn:outgoing>f_gw_arquivo_abrir</bpmn:outgoing><bpmn:outgoing>f_gw_arquivo_merge_triagem</bpmn:outgoing></bpmn:exclusiveGateway>
+    <bpmn:task id="abrir" name="Abrir próximo arquivo CSV"><bpmn:incoming>f_gw_arquivo_abrir</bpmn:incoming><bpmn:outgoing>f_abrir_gw_csv</bpmn:outgoing><bpmn:standardLoopCharacteristics id="loop_abrir" /></bpmn:task>
+    <bpmn:exclusiveGateway id="gw_csv" name="CSV válido?"><bpmn:incoming>f_abrir_gw_csv</bpmn:incoming><bpmn:outgoing>f_gw_csv_validar</bpmn:outgoing><bpmn:outgoing>f_gw_csv_quarentena</bpmn:outgoing></bpmn:exclusiveGateway>
+    <bpmn:task id="quarentena" name="Mover para quarentena com motivo"><bpmn:incoming>f_gw_csv_quarentena</bpmn:incoming><bpmn:outgoing>f_quarentena_merge_arq</bpmn:outgoing></bpmn:task>
+    <bpmn:task id="validar" name="Ler próxima linha, validar e normalizar"><bpmn:incoming>f_gw_csv_validar</bpmn:incoming><bpmn:incoming>f_gw_mais_linhas_validar</bpmn:incoming><bpmn:outgoing>f_validar_gw_linha</bpmn:outgoing><bpmn:standardLoopCharacteristics id="loop_validar" /></bpmn:task>
+    <bpmn:exclusiveGateway id="gw_linha" name="Linha válida e no território?"><bpmn:incoming>f_validar_gw_linha</bpmn:incoming><bpmn:outgoing>f_gw_linha_lgpd</bpmn:outgoing><bpmn:outgoing>f_gw_linha_rejeitar</bpmn:outgoing></bpmn:exclusiveGateway>
+    <bpmn:task id="rejeitar" name="Registrar rejeição com motivo"><bpmn:incoming>f_gw_linha_rejeitar</bpmn:incoming><bpmn:outgoing>f_rejeitar_gw_mais_linhas</bpmn:outgoing></bpmn:task>
+    <bpmn:task id="lgpd" name="Remover dados pessoais (LGPD)"><bpmn:incoming>f_gw_linha_lgpd</bpmn:incoming><bpmn:outgoing>f_lgpd_gw_dup</bpmn:outgoing></bpmn:task>
+    <bpmn:exclusiveGateway id="gw_dup" name="Duplicata ou já importada?"><bpmn:incoming>f_lgpd_gw_dup</bpmn:incoming><bpmn:outgoing>f_gw_dup_criar</bpmn:outgoing><bpmn:outgoing>f_gw_dup_duplicata</bpmn:outgoing></bpmn:exclusiveGateway>
+    <bpmn:task id="duplicata" name="Registrar duplicata"><bpmn:incoming>f_gw_dup_duplicata</bpmn:incoming><bpmn:outgoing>f_duplicata_gw_mais_linhas</bpmn:outgoing></bpmn:task>
+    <bpmn:serviceTask id="criar" name="Criar relato (POST /api/reports)"><bpmn:incoming>f_gw_dup_criar</bpmn:incoming><bpmn:outgoing>f_criar_gw_mais_linhas</bpmn:outgoing></bpmn:serviceTask>
+    <bpmn:task id="manter" name="Manter arquivo para nova tentativa"><bpmn:incoming>f_erro_criar_manter</bpmn:incoming><bpmn:outgoing>f_manter_fim_falha2</bpmn:outgoing></bpmn:task>
+    <bpmn:endEvent id="fim_falha2" name="Importação interrompida"><bpmn:incoming>f_manter_fim_falha2</bpmn:incoming><bpmn:errorEventDefinition id="def_fim_falha2" errorRef="erro_indisponivel" /></bpmn:endEvent>
+    <bpmn:exclusiveGateway id="gw_mais_linhas" name="Mais linhas?"><bpmn:incoming>f_rejeitar_gw_mais_linhas</bpmn:incoming><bpmn:incoming>f_duplicata_gw_mais_linhas</bpmn:incoming><bpmn:incoming>f_criar_gw_mais_linhas</bpmn:incoming><bpmn:outgoing>f_gw_mais_linhas_validar</bpmn:outgoing><bpmn:outgoing>f_gw_mais_linhas_processados</bpmn:outgoing></bpmn:exclusiveGateway>
+    <bpmn:task id="processados" name="Mover arquivo para processados"><bpmn:incoming>f_gw_mais_linhas_processados</bpmn:incoming><bpmn:outgoing>f_processados_merge_arq</bpmn:outgoing></bpmn:task>
+    <bpmn:exclusiveGateway id="merge_arq" name=""><bpmn:incoming>f_quarentena_merge_arq</bpmn:incoming><bpmn:incoming>f_processados_merge_arq</bpmn:incoming><bpmn:outgoing>f_merge_arq_gw_arquivo</bpmn:outgoing></bpmn:exclusiveGateway>
+    <bpmn:exclusiveGateway id="merge_triagem" name=""><bpmn:incoming>f_gw_arquivo_merge_triagem</bpmn:incoming><bpmn:outgoing>f_merge_triagem_fatores</bpmn:outgoing></bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="fatores" name="Consultar chuva e locais sensíveis"><bpmn:incoming>f_merge_triagem_fatores</bpmn:incoming><bpmn:outgoing>f_fatores_priorizar</bpmn:outgoing></bpmn:serviceTask>
+    <bpmn:task id="degradar" name="Usar cache/snapshot ou seguir sem o fator"><bpmn:incoming>f_erro_fatores_degradar</bpmn:incoming><bpmn:outgoing>f_degradar_priorizar</bpmn:outgoing></bpmn:task>
+    <bpmn:task id="priorizar" name="Priorizar próximo relato aberto"><bpmn:incoming>f_fatores_priorizar</bpmn:incoming><bpmn:incoming>f_degradar_priorizar</bpmn:incoming><bpmn:incoming>f_gw_mais_relatos_priorizar</bpmn:incoming><bpmn:outgoing>f_priorizar_gw_alta</bpmn:outgoing><bpmn:standardLoopCharacteristics id="loop_priorizar" /></bpmn:task>
+    <bpmn:exclusiveGateway id="gw_alta" name="ALTA e pendente?"><bpmn:incoming>f_priorizar_gw_alta</bpmn:incoming><bpmn:outgoing>f_gw_alta_em_analise</bpmn:outgoing><bpmn:outgoing>f_gw_alta_merge_alta</bpmn:outgoing></bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="em_analise" name="Mudar para em análise (PATCH)"><bpmn:incoming>f_gw_alta_em_analise</bpmn:incoming><bpmn:outgoing>f_em_analise_merge_alta</bpmn:outgoing></bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="merge_alta" name=""><bpmn:incoming>f_gw_alta_merge_alta</bpmn:incoming><bpmn:incoming>f_em_analise_merge_alta</bpmn:incoming><bpmn:outgoing>f_merge_alta_gw_mais_relatos</bpmn:outgoing></bpmn:exclusiveGateway>
+    <bpmn:exclusiveGateway id="gw_mais_relatos" name="Mais relatos?"><bpmn:incoming>f_merge_alta_gw_mais_relatos</bpmn:incoming><bpmn:outgoing>f_gw_mais_relatos_priorizar</bpmn:outgoing><bpmn:outgoing>f_gw_mais_relatos_gravar</bpmn:outgoing></bpmn:exclusiveGateway>
+    <bpmn:task id="gravar" name="Gravar fila, indicadores e resumo"><bpmn:incoming>f_gw_mais_relatos_gravar</bpmn:incoming><bpmn:outgoing>f_gravar_gw_houve_alta</bpmn:outgoing></bpmn:task>
+    <bpmn:exclusiveGateway id="gw_houve_alta" name="Houve ALTA?"><bpmn:incoming>f_gravar_gw_houve_alta</bpmn:incoming><bpmn:outgoing>f_gw_houve_alta_notificar</bpmn:outgoing><bpmn:outgoing>f_gw_houve_alta_fim</bpmn:outgoing></bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="notificar" name="Notificar gestor (ntfy)"><bpmn:incoming>f_gw_houve_alta_notificar</bpmn:incoming><bpmn:outgoing>f_notificar_fim</bpmn:outgoing></bpmn:serviceTask>
+    <bpmn:endEvent id="fim" name="Fila do gestor atualizada"><bpmn:incoming>f_gw_houve_alta_fim</bpmn:incoming><bpmn:incoming>f_notificar_fim</bpmn:incoming></bpmn:endEvent>
+    <bpmn:boundaryEvent id="erro_criar" name="MVP fora após 3 tentativas" attachedToRef="criar"><bpmn:outgoing>f_erro_criar_manter</bpmn:outgoing><bpmn:errorEventDefinition id="def_erro_criar" errorRef="erro_indisponivel" /></bpmn:boundaryEvent>
+    <bpmn:boundaryEvent id="erro_fatores" name="Fonte externa fora" attachedToRef="fatores"><bpmn:outgoing>f_erro_fatores_degradar</bpmn:outgoing><bpmn:errorEventDefinition id="def_erro_fatores" errorRef="erro_indisponivel" /></bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="f_inicio_verificar" name="" sourceRef="inicio" targetRef="verificar" />
+    <bpmn:sequenceFlow id="f_verificar_gw_mvp" name="" sourceRef="verificar" targetRef="gw_mvp" />
+    <bpmn:sequenceFlow id="f_gw_mvp_ler_mvp" name="sim" sourceRef="gw_mvp" targetRef="ler_mvp" />
+    <bpmn:sequenceFlow id="f_gw_mvp_falha" name="não" sourceRef="gw_mvp" targetRef="falha" />
+    <bpmn:sequenceFlow id="f_falha_fim_falha" name="" sourceRef="falha" targetRef="fim_falha" />
+    <bpmn:sequenceFlow id="f_ler_mvp_gw_arquivo" name="" sourceRef="ler_mvp" targetRef="gw_arquivo" />
+    <bpmn:sequenceFlow id="f_gw_arquivo_abrir" name="sim" sourceRef="gw_arquivo" targetRef="abrir" />
+    <bpmn:sequenceFlow id="f_gw_arquivo_merge_triagem" name="não" sourceRef="gw_arquivo" targetRef="merge_triagem" />
+    <bpmn:sequenceFlow id="f_abrir_gw_csv" name="" sourceRef="abrir" targetRef="gw_csv" />
+    <bpmn:sequenceFlow id="f_gw_csv_validar" name="sim" sourceRef="gw_csv" targetRef="validar" />
+    <bpmn:sequenceFlow id="f_gw_csv_quarentena" name="não" sourceRef="gw_csv" targetRef="quarentena" />
+    <bpmn:sequenceFlow id="f_quarentena_merge_arq" name="" sourceRef="quarentena" targetRef="merge_arq" />
+    <bpmn:sequenceFlow id="f_validar_gw_linha" name="" sourceRef="validar" targetRef="gw_linha" />
+    <bpmn:sequenceFlow id="f_gw_linha_lgpd" name="sim" sourceRef="gw_linha" targetRef="lgpd" />
+    <bpmn:sequenceFlow id="f_gw_linha_rejeitar" name="não" sourceRef="gw_linha" targetRef="rejeitar" />
+    <bpmn:sequenceFlow id="f_rejeitar_gw_mais_linhas" name="" sourceRef="rejeitar" targetRef="gw_mais_linhas" />
+    <bpmn:sequenceFlow id="f_lgpd_gw_dup" name="" sourceRef="lgpd" targetRef="gw_dup" />
+    <bpmn:sequenceFlow id="f_gw_dup_criar" name="não" sourceRef="gw_dup" targetRef="criar" />
+    <bpmn:sequenceFlow id="f_gw_dup_duplicata" name="sim" sourceRef="gw_dup" targetRef="duplicata" />
+    <bpmn:sequenceFlow id="f_duplicata_gw_mais_linhas" name="" sourceRef="duplicata" targetRef="gw_mais_linhas" />
+    <bpmn:sequenceFlow id="f_criar_gw_mais_linhas" name="" sourceRef="criar" targetRef="gw_mais_linhas" />
+    <bpmn:sequenceFlow id="f_erro_criar_manter" name="" sourceRef="erro_criar" targetRef="manter" />
+    <bpmn:sequenceFlow id="f_manter_fim_falha2" name="" sourceRef="manter" targetRef="fim_falha2" />
+    <bpmn:sequenceFlow id="f_gw_mais_linhas_validar" name="sim" sourceRef="gw_mais_linhas" targetRef="validar" />
+    <bpmn:sequenceFlow id="f_gw_mais_linhas_processados" name="não" sourceRef="gw_mais_linhas" targetRef="processados" />
+    <bpmn:sequenceFlow id="f_processados_merge_arq" name="" sourceRef="processados" targetRef="merge_arq" />
+    <bpmn:sequenceFlow id="f_merge_arq_gw_arquivo" name="" sourceRef="merge_arq" targetRef="gw_arquivo" />
+    <bpmn:sequenceFlow id="f_merge_triagem_fatores" name="" sourceRef="merge_triagem" targetRef="fatores" />
+    <bpmn:sequenceFlow id="f_fatores_priorizar" name="" sourceRef="fatores" targetRef="priorizar" />
+    <bpmn:sequenceFlow id="f_erro_fatores_degradar" name="" sourceRef="erro_fatores" targetRef="degradar" />
+    <bpmn:sequenceFlow id="f_degradar_priorizar" name="" sourceRef="degradar" targetRef="priorizar" />
+    <bpmn:sequenceFlow id="f_priorizar_gw_alta" name="" sourceRef="priorizar" targetRef="gw_alta" />
+    <bpmn:sequenceFlow id="f_gw_alta_em_analise" name="sim" sourceRef="gw_alta" targetRef="em_analise" />
+    <bpmn:sequenceFlow id="f_gw_alta_merge_alta" name="não" sourceRef="gw_alta" targetRef="merge_alta" />
+    <bpmn:sequenceFlow id="f_em_analise_merge_alta" name="" sourceRef="em_analise" targetRef="merge_alta" />
+    <bpmn:sequenceFlow id="f_merge_alta_gw_mais_relatos" name="" sourceRef="merge_alta" targetRef="gw_mais_relatos" />
+    <bpmn:sequenceFlow id="f_gw_mais_relatos_priorizar" name="sim" sourceRef="gw_mais_relatos" targetRef="priorizar" />
+    <bpmn:sequenceFlow id="f_gw_mais_relatos_gravar" name="não" sourceRef="gw_mais_relatos" targetRef="gravar" />
+    <bpmn:sequenceFlow id="f_gravar_gw_houve_alta" name="" sourceRef="gravar" targetRef="gw_houve_alta" />
+    <bpmn:sequenceFlow id="f_gw_houve_alta_notificar" name="sim" sourceRef="gw_houve_alta" targetRef="notificar" />
+    <bpmn:sequenceFlow id="f_gw_houve_alta_fim" name="não" sourceRef="gw_houve_alta" targetRef="fim" />
+    <bpmn:sequenceFlow id="f_notificar_fim" name="" sourceRef="notificar" targetRef="fim" />
+    <bpmn:textAnnotation id="nota_pessoa"><bpmn:text>Pessoa no circuito: o robô nunca marca "resolvido" nem "descartado". Só o gestor decide.</bpmn:text></bpmn:textAnnotation>
+    <bpmn:association id="assoc_nota" sourceRef="em_analise" targetRef="nota_pessoa" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="diagrama"><bpmndi:BPMNPlane id="plano" bpmnElement="robo_caminho_livre">
+    <bpmndi:BPMNShape id="inicio_di" bpmnElement="inicio"><dc:Bounds x="82.0" y="172.0" width="36" height="36" /><bpmndi:BPMNLabel><dc:Bounds x="50.0" y="212.0" width="100" height="27" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="verificar_di" bpmnElement="verificar"><dc:Bounds x="200.0" y="148.0" width="130" height="84" /></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="gw_mvp_di" bpmnElement="gw_mvp" isMarkerVisible="true"><dc:Bounds x="405.0" y="165.0" width="50" height="50" /><bpmndi:BPMNLabel><dc:Bounds x="313.0" y="143.0" width="100" height="27" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="falha_di" bpmnElement="falha"><dc:Bounds x="365.0" y="298.0" width="130" height="84" /></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="fim_falha_di" bpmnElement="fim_falha"><dc:Bounds x="412.0" y="472.0" width="36" height="36" /><bpmndi:BPMNLabel><dc:Bounds x="380.0" y="512.0" width="100" height="27" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="ler_mvp_di" bpmnElement="ler_mvp"><dc:Bounds x="530.0" y="148.0" width="130" height="84" /></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="gw_arquivo_di" bpmnElement="gw_arquivo" isMarkerVisible="true"><dc:Bounds x="735.0" y="165.0" width="50" height="50" /><bpmndi:BPMNLabel><dc:Bounds x="643.0" y="143.0" width="100" height="27" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="abrir_di" bpmnElement="abrir"><dc:Bounds x="860.0" y="148.0" width="130" height="84" /></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="gw_csv_di" bpmnElement="gw_csv" isMarkerVisible="true"><dc:Bounds x="1065.0" y="165.0" width="50" height="50" /><bpmndi:BPMNLabel><dc:Bounds x="973.0" y="143.0" width="100" height="27" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="quarentena_di" bpmnElement="quarentena"><dc:Bounds x="1025.0" y="298.0" width="130" height="84" /></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="validar_di" bpmnElement="validar"><dc:Bounds x="1190.0" y="148.0" width="130" height="84" /></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="gw_linha_di" bpmnElement="gw_linha" isMarkerVisible="true"><dc:Bounds x="1395.0" y="165.0" width="50" height="50" /><bpmndi:BPMNLabel><dc:Bounds x="1303.0" y="143.0" width="100" height="27" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="rejeitar_di" bpmnElement="rejeitar"><dc:Bounds x="1355.0" y="298.0" width="130" height="84" /></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="lgpd_di" bpmnElement="lgpd"><dc:Bounds x="1520.0" y="148.0" width="130" height="84" /></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="gw_dup_di" bpmnElement="gw_dup" isMarkerVisible="true"><dc:Bounds x="1725.0" y="165.0" width="50" height="50" /><bpmndi:BPMNLabel><dc:Bounds x="1633.0" y="143.0" width="100" height="27" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="duplicata_di" bpmnElement="duplicata"><dc:Bounds x="1685.0" y="298.0" width="130" height="84" /></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="criar_di" bpmnElement="criar"><dc:Bounds x="1850.0" y="148.0" width="130" height="84" /></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="manter_di" bpmnElement="manter"><dc:Bounds x="1850.0" y="298.0" width="130" height="84" /></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="fim_falha2_di" bpmnElement="fim_falha2"><dc:Bounds x="1897.0" y="472.0" width="36" height="36" /><bpmndi:BPMNLabel><dc:Bounds x="1865.0" y="512.0" width="100" height="27" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="gw_mais_linhas_di" bpmnElement="gw_mais_linhas" isMarkerVisible="true"><dc:Bounds x="2055.0" y="165.0" width="50" height="50" /><bpmndi:BPMNLabel><dc:Bounds x="1963.0" y="143.0" width="100" height="27" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="processados_di" bpmnElement="processados"><dc:Bounds x="2180.0" y="148.0" width="130" height="84" /></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="merge_arq_di" bpmnElement="merge_arq" isMarkerVisible="true"><dc:Bounds x="2385.0" y="165.0" width="50" height="50" /></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="merge_triagem_di" bpmnElement="merge_triagem" isMarkerVisible="true"><dc:Bounds x="735.0" y="615.0" width="50" height="50" /></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="fatores_di" bpmnElement="fatores"><dc:Bounds x="860.0" y="598.0" width="130" height="84" /></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="degradar_di" bpmnElement="degradar"><dc:Bounds x="860.0" y="748.0" width="130" height="84" /></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="priorizar_di" bpmnElement="priorizar"><dc:Bounds x="1190.0" y="598.0" width="130" height="84" /></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="gw_alta_di" bpmnElement="gw_alta" isMarkerVisible="true"><dc:Bounds x="1395.0" y="615.0" width="50" height="50" /><bpmndi:BPMNLabel><dc:Bounds x="1303.0" y="593.0" width="100" height="27" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="em_analise_di" bpmnElement="em_analise"><dc:Bounds x="1520.0" y="598.0" width="130" height="84" /></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="merge_alta_di" bpmnElement="merge_alta" isMarkerVisible="true"><dc:Bounds x="1725.0" y="615.0" width="50" height="50" /></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="gw_mais_relatos_di" bpmnElement="gw_mais_relatos" isMarkerVisible="true"><dc:Bounds x="1890.0" y="615.0" width="50" height="50" /><bpmndi:BPMNLabel><dc:Bounds x="1798.0" y="593.0" width="100" height="27" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="gravar_di" bpmnElement="gravar"><dc:Bounds x="2015.0" y="598.0" width="130" height="84" /></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="gw_houve_alta_di" bpmnElement="gw_houve_alta" isMarkerVisible="true"><dc:Bounds x="2220.0" y="615.0" width="50" height="50" /><bpmndi:BPMNLabel><dc:Bounds x="2128.0" y="593.0" width="100" height="27" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="notificar_di" bpmnElement="notificar"><dc:Bounds x="2345.0" y="598.0" width="130" height="84" /></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="fim_di" bpmnElement="fim"><dc:Bounds x="2557.0" y="622.0" width="36" height="36" /><bpmndi:BPMNLabel><dc:Bounds x="2525.0" y="588.0" width="100" height="27" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="erro_criar_di" bpmnElement="erro_criar"><dc:Bounds x="1897.0" y="214.0" width="36" height="36" /><bpmndi:BPMNLabel><dc:Bounds x="1937.0" y="236.0" width="90" height="27" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="erro_fatores_di" bpmnElement="erro_fatores"><dc:Bounds x="907.0" y="664.0" width="36" height="36" /><bpmndi:BPMNLabel><dc:Bounds x="947.0" y="686.0" width="90" height="27" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+    <bpmndi:BPMNShape id="nota_pessoa_di" bpmnElement="nota_pessoa"><dc:Bounds x="1550.0" y="473.0" width="220" height="55" /></bpmndi:BPMNShape>
+    <bpmndi:BPMNEdge id="assoc_nota_di" bpmnElement="assoc_nota"><di:waypoint x="1610.0" y="598.0" /><di:waypoint x="1630.0" y="528.0" /></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_inicio_verificar_di" bpmnElement="f_inicio_verificar"><di:waypoint x="118.0" y="190.0" /><di:waypoint x="200.0" y="190.0" /></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_verificar_gw_mvp_di" bpmnElement="f_verificar_gw_mvp"><di:waypoint x="330.0" y="190.0" /><di:waypoint x="405.0" y="190.0" /></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_gw_mvp_ler_mvp_di" bpmnElement="f_gw_mvp_ler_mvp"><di:waypoint x="455.0" y="190.0" /><di:waypoint x="530.0" y="190.0" /><bpmndi:BPMNLabel><dc:Bounds x="463.0" y="170.0" width="24" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_gw_mvp_falha_di" bpmnElement="f_gw_mvp_falha"><di:waypoint x="430.0" y="215.0" /><di:waypoint x="430.0" y="298.0" /><bpmndi:BPMNLabel><dc:Bounds x="436.0" y="219.0" width="24" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_falha_fim_falha_di" bpmnElement="f_falha_fim_falha"><di:waypoint x="430.0" y="382.0" /><di:waypoint x="430.0" y="472.0" /></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_ler_mvp_gw_arquivo_di" bpmnElement="f_ler_mvp_gw_arquivo"><di:waypoint x="660.0" y="190.0" /><di:waypoint x="735.0" y="190.0" /></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_gw_arquivo_abrir_di" bpmnElement="f_gw_arquivo_abrir"><di:waypoint x="785.0" y="190.0" /><di:waypoint x="860.0" y="190.0" /><bpmndi:BPMNLabel><dc:Bounds x="793.0" y="170.0" width="24" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_gw_arquivo_merge_triagem_di" bpmnElement="f_gw_arquivo_merge_triagem"><di:waypoint x="760.0" y="215.0" /><di:waypoint x="760.0" y="615.0" /><bpmndi:BPMNLabel><dc:Bounds x="766.0" y="219.0" width="24" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_abrir_gw_csv_di" bpmnElement="f_abrir_gw_csv"><di:waypoint x="990.0" y="190.0" /><di:waypoint x="1065.0" y="190.0" /></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_gw_csv_validar_di" bpmnElement="f_gw_csv_validar"><di:waypoint x="1115.0" y="190.0" /><di:waypoint x="1190.0" y="190.0" /><bpmndi:BPMNLabel><dc:Bounds x="1123.0" y="170.0" width="24" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_gw_csv_quarentena_di" bpmnElement="f_gw_csv_quarentena"><di:waypoint x="1090.0" y="215.0" /><di:waypoint x="1090.0" y="298.0" /><bpmndi:BPMNLabel><dc:Bounds x="1096.0" y="219.0" width="24" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_quarentena_merge_arq_di" bpmnElement="f_quarentena_merge_arq"><di:waypoint x="1090.0" y="382.0" /><di:waypoint x="1090" y="420" /><di:waypoint x="2410" y="420" /><di:waypoint x="2410.0" y="215.0" /></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_validar_gw_linha_di" bpmnElement="f_validar_gw_linha"><di:waypoint x="1320.0" y="190.0" /><di:waypoint x="1395.0" y="190.0" /></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_gw_linha_lgpd_di" bpmnElement="f_gw_linha_lgpd"><di:waypoint x="1445.0" y="190.0" /><di:waypoint x="1520.0" y="190.0" /><bpmndi:BPMNLabel><dc:Bounds x="1453.0" y="170.0" width="24" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_gw_linha_rejeitar_di" bpmnElement="f_gw_linha_rejeitar"><di:waypoint x="1420.0" y="215.0" /><di:waypoint x="1420.0" y="298.0" /><bpmndi:BPMNLabel><dc:Bounds x="1426.0" y="219.0" width="24" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_rejeitar_gw_mais_linhas_di" bpmnElement="f_rejeitar_gw_mais_linhas"><di:waypoint x="1420.0" y="382.0" /><di:waypoint x="1420" y="400" /><di:waypoint x="2080" y="400" /><di:waypoint x="2080.0" y="215.0" /></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_lgpd_gw_dup_di" bpmnElement="f_lgpd_gw_dup"><di:waypoint x="1650.0" y="190.0" /><di:waypoint x="1725.0" y="190.0" /></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_gw_dup_criar_di" bpmnElement="f_gw_dup_criar"><di:waypoint x="1775.0" y="190.0" /><di:waypoint x="1850.0" y="190.0" /><bpmndi:BPMNLabel><dc:Bounds x="1783.0" y="170.0" width="24" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_gw_dup_duplicata_di" bpmnElement="f_gw_dup_duplicata"><di:waypoint x="1750.0" y="215.0" /><di:waypoint x="1750.0" y="298.0" /><bpmndi:BPMNLabel><dc:Bounds x="1756.0" y="219.0" width="24" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_duplicata_gw_mais_linhas_di" bpmnElement="f_duplicata_gw_mais_linhas"><di:waypoint x="1750.0" y="382.0" /><di:waypoint x="1750" y="400" /><di:waypoint x="2080" y="400" /><di:waypoint x="2080.0" y="215.0" /></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_criar_gw_mais_linhas_di" bpmnElement="f_criar_gw_mais_linhas"><di:waypoint x="1980.0" y="190.0" /><di:waypoint x="2055.0" y="190.0" /></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_erro_criar_manter_di" bpmnElement="f_erro_criar_manter"><di:waypoint x="1915.0" y="250.0" /><di:waypoint x="1915.0" y="298.0" /></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_manter_fim_falha2_di" bpmnElement="f_manter_fim_falha2"><di:waypoint x="1915.0" y="382.0" /><di:waypoint x="1915.0" y="472.0" /></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_gw_mais_linhas_validar_di" bpmnElement="f_gw_mais_linhas_validar"><di:waypoint x="2080.0" y="165.0" /><di:waypoint x="2080" y="105" /><di:waypoint x="1255" y="105" /><di:waypoint x="1255.0" y="148.0" /><bpmndi:BPMNLabel><dc:Bounds x="2086.0" y="147.0" width="24" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_gw_mais_linhas_processados_di" bpmnElement="f_gw_mais_linhas_processados"><di:waypoint x="2105.0" y="190.0" /><di:waypoint x="2180.0" y="190.0" /><bpmndi:BPMNLabel><dc:Bounds x="2113.0" y="170.0" width="24" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_processados_merge_arq_di" bpmnElement="f_processados_merge_arq"><di:waypoint x="2310.0" y="190.0" /><di:waypoint x="2385.0" y="190.0" /></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_merge_arq_gw_arquivo_di" bpmnElement="f_merge_arq_gw_arquivo"><di:waypoint x="2410.0" y="165.0" /><di:waypoint x="2410" y="75" /><di:waypoint x="760" y="75" /><di:waypoint x="760.0" y="165.0" /></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_merge_triagem_fatores_di" bpmnElement="f_merge_triagem_fatores"><di:waypoint x="785.0" y="640.0" /><di:waypoint x="860.0" y="640.0" /></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_fatores_priorizar_di" bpmnElement="f_fatores_priorizar"><di:waypoint x="990.0" y="640.0" /><di:waypoint x="1190.0" y="640.0" /></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_erro_fatores_degradar_di" bpmnElement="f_erro_fatores_degradar"><di:waypoint x="925.0" y="700.0" /><di:waypoint x="925.0" y="748.0" /></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_degradar_priorizar_di" bpmnElement="f_degradar_priorizar"><di:waypoint x="990.0" y="790.0" /><di:waypoint x="1255" y="790" /><di:waypoint x="1255.0" y="682.0" /></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_priorizar_gw_alta_di" bpmnElement="f_priorizar_gw_alta"><di:waypoint x="1320.0" y="640.0" /><di:waypoint x="1395.0" y="640.0" /></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_gw_alta_em_analise_di" bpmnElement="f_gw_alta_em_analise"><di:waypoint x="1445.0" y="640.0" /><di:waypoint x="1520.0" y="640.0" /><bpmndi:BPMNLabel><dc:Bounds x="1453.0" y="620.0" width="24" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_gw_alta_merge_alta_di" bpmnElement="f_gw_alta_merge_alta"><di:waypoint x="1420.0" y="665.0" /><di:waypoint x="1420" y="715" /><di:waypoint x="1750" y="715" /><di:waypoint x="1750.0" y="665.0" /><bpmndi:BPMNLabel><dc:Bounds x="1426.0" y="669.0" width="24" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_em_analise_merge_alta_di" bpmnElement="f_em_analise_merge_alta"><di:waypoint x="1650.0" y="640.0" /><di:waypoint x="1725.0" y="640.0" /></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_merge_alta_gw_mais_relatos_di" bpmnElement="f_merge_alta_gw_mais_relatos"><di:waypoint x="1775.0" y="640.0" /><di:waypoint x="1890.0" y="640.0" /></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_gw_mais_relatos_priorizar_di" bpmnElement="f_gw_mais_relatos_priorizar"><di:waypoint x="1915.0" y="615.0" /><di:waypoint x="1915" y="560" /><di:waypoint x="1255" y="560" /><di:waypoint x="1255.0" y="598.0" /><bpmndi:BPMNLabel><dc:Bounds x="1921.0" y="597.0" width="24" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_gw_mais_relatos_gravar_di" bpmnElement="f_gw_mais_relatos_gravar"><di:waypoint x="1940.0" y="640.0" /><di:waypoint x="2015.0" y="640.0" /><bpmndi:BPMNLabel><dc:Bounds x="1948.0" y="620.0" width="24" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_gravar_gw_houve_alta_di" bpmnElement="f_gravar_gw_houve_alta"><di:waypoint x="2145.0" y="640.0" /><di:waypoint x="2220.0" y="640.0" /></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_gw_houve_alta_notificar_di" bpmnElement="f_gw_houve_alta_notificar"><di:waypoint x="2270.0" y="640.0" /><di:waypoint x="2345.0" y="640.0" /><bpmndi:BPMNLabel><dc:Bounds x="2278.0" y="620.0" width="24" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_gw_houve_alta_fim_di" bpmnElement="f_gw_houve_alta_fim"><di:waypoint x="2245.0" y="665.0" /><di:waypoint x="2245" y="715" /><di:waypoint x="2575" y="715" /><di:waypoint x="2575.0" y="658.0" /><bpmndi:BPMNLabel><dc:Bounds x="2251.0" y="669.0" width="24" height="14" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+    <bpmndi:BPMNEdge id="f_notificar_fim_di" bpmnElement="f_notificar_fim"><di:waypoint x="2475.0" y="640.0" /><di:waypoint x="2557.0" y="640.0" /></bpmndi:BPMNEdge>
+  </bpmndi:BPMNPlane></bpmndi:BPMNDiagram>
+</bpmn:definitions>

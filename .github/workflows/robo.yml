@@ -1,0 +1,71 @@
+name: Robô Caminho Livre
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "0 * * * *"   # de hora em hora, sem intervenção humana
+  workflow_dispatch:
+    inputs:
+      comando:
+        description: "executar | importar | triagem"
+        default: executar
+      simular:
+        description: "Rodar sem alterar o MVP"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: robo-caminho-livre
+  cancel-in-progress: false
+
+jobs:
+  testes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Testes (sucesso, decisão e falha)
+        run: PYTHONPATH=src:tests python -m unittest discover -s tests -v
+
+  robo:
+    needs: testes
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Restaura o estado (idempotência e cache)
+        uses: actions/cache@v4
+        with:
+          path: saida/estado.db
+          key: estado-${{ github.run_id }}
+          restore-keys: estado-
+      - name: Executa o robô
+        env:
+          MVP_URL: https://caminholivre-gs.azurewebsites.net
+          MVP_ADMIN_TOKEN: ${{ secrets.MVP_ADMIN_TOKEN }}
+          NTFY_URL: ${{ secrets.NTFY_URL }}
+        run: |
+          ARGS="${{ inputs.comando || 'executar' }}"
+          if [ "${{ inputs.simular }}" = "true" ]; then ARGS="$ARGS --simular"; fi
+          python rodar.py $ARGS
+      - name: Publica logs e saídas como evidência de auditoria
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: execucao-${{ github.run_id }}
+          path: |
+            logs/*.jsonl
+            saida/*.json
+            saida/*.csv
+            saida/execucoes/
+          retention-days: 30

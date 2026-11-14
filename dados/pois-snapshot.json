@@ -1,0 +1,398 @@
+{
+ "fonte": "OpenStreetMap via Overpass API",
+ "licenca": "ODbL 1.0 - © colaboradores do OpenStreetMap",
+ "gerado_em": "2026-11-14T12:35:21Z",
+ "bbox": [
+  -23.572,
+  -46.662,
+  -23.557,
+  -46.643
+ ],
+ "pois": [
+  {
+   "lat": -23.5707203,
+   "lon": -46.6527579,
+   "tipo": "escola",
+   "nome": "Escola Pipoquinha",
+   "osm_id": "node/1041601043"
+  },
+  {
+   "lat": -23.5702509,
+   "lon": -46.6483781,
+   "tipo": "escola",
+   "nome": "Escola de Yoga",
+   "osm_id": "node/1059213957"
+  },
+  {
+   "lat": -23.5701355,
+   "lon": -46.6571707,
+   "tipo": "escola",
+   "nome": "Colégio Winnicott",
+   "osm_id": "node/1066862942"
+  },
+  {
+   "lat": -23.5712647,
+   "lon": -46.6561862,
+   "tipo": "escola",
+   "nome": "Escola Kumon",
+   "osm_id": "node/1066864702"
+  },
+  {
+   "lat": -23.5657296,
+   "lon": -46.6493847,
+   "tipo": "hospital",
+   "nome": "Pró Matre Paulista",
+   "osm_id": "node/1646829764"
+  },
+  {
+   "lat": -23.5578762,
+   "lon": -46.6601803,
+   "tipo": "acesso ao metrô",
+   "nome": "Consolação",
+   "osm_id": "node/3511236618"
+  },
+  {
+   "lat": -23.5581143,
+   "lon": -46.6604548,
+   "tipo": "acesso ao metrô",
+   "nome": "Consolação",
+   "osm_id": "node/3511236619"
+  },
+  {
+   "lat": -23.5681099,
+   "lon": -46.6486487,
+   "tipo": "acesso ao metrô",
+   "nome": "Metrò Brigadeiro",
+   "osm_id": "node/3892325894"
+  },
+  {
+   "lat": -23.5576709,
+   "lon": -46.6609756,
+   "tipo": "acesso ao metrô",
+   "nome": "Metrô Consolação",
+   "osm_id": "node/4128350707"
+  },
+  {
+   "lat": -23.5574413,
+   "lon": -46.6607549,
+   "tipo": "acesso ao metrô",
+   "nome": "Metro Consolação",
+   "osm_id": "node/4128350708"
+  },
+  {
+   "lat": -23.5580459,
+   "lon": -46.6605712,
+   "tipo": "acesso ao metrô",
+   "nome": "Metrô Consolação",
+   "osm_id": "node/4128372408"
+  },
+  {
+   "lat": -23.5578223,
+   "lon": -46.6602852,
+   "tipo": "acesso ao metrô",
+   "nome": "Metrô Consolação",
+   "osm_id": "node/4128376202"
+  },
+  {
+   "lat": -23.5632144,
+   "lon": -46.6541252,
+   "tipo": "acesso ao metrô",
+   "nome": "Metro Trianon Masp",
+   "osm_id": "node/4128591474"
+  },
+  {
+   "lat": -23.5634821,
+   "lon": -46.6537991,
+   "tipo": "acesso ao metrô",
+   "nome": "Metro Trianon MASP",
+   "osm_id": "node/4128591672"
+  },
+  {
+   "lat": -23.5639287,
+   "lon": -46.6536861,
+   "tipo": "acesso ao metrô",
+   "nome": "Metro Trianon MASP",
+   "osm_id": "node/4128591678"
+  },
+  {
+   "lat": -23.5629177,
+   "lon": -46.6544743,
+   "tipo": "acesso ao metrô",
+   "nome": "Metro Trianon Masp",
+   "osm_id": "node/4128724905"
+  },
+  {
+   "lat": -23.5682841,
+   "lon": -46.6478837,
+   "tipo": "acesso ao metrô",
+   "nome": "Metro Brigadeiro",
+   "osm_id": "node/4128749470"
+  },
+  {
+   "lat": -23.5691284,
+   "lon": -46.6473,
+   "tipo": "acesso ao metrô",
+   "nome": "Metro Brigadeiro",
+   "osm_id": "node/4128749471"
+  },
+  {
+   "lat": -23.5688898,
+   "lon": -46.6471077,
+   "tipo": "acesso ao metrô",
+   "nome": "Metro Brigadeiro",
+   "osm_id": "node/4128854928"
+  },
+  {
+   "lat": -23.5613957,
+   "lon": -46.6612792,
+   "tipo": "escola",
+   "nome": "Alumni - Cursos de inglês",
+   "osm_id": "node/4134768092"
+  },
+  {
+   "lat": -23.5604909,
+   "lon": -46.6536101,
+   "tipo": "clínica",
+   "nome": "Mater Prime",
+   "osm_id": "node/4274204113"
+  },
+  {
+   "lat": -23.5645376,
+   "lon": -46.6617614,
+   "tipo": "clínica",
+   "nome": "Cimerman Medicina Diagnóstica",
+   "osm_id": "node/4284000590"
+  },
+  {
+   "lat": -23.5586951,
+   "lon": -46.6609649,
+   "tipo": "clínica",
+   "nome": "Delboni",
+   "osm_id": "node/4894055700"
+  },
+  {
+   "lat": -23.5676418,
+   "lon": -46.6509728,
+   "tipo": "hospital",
+   "nome": "Hospital Total Cor",
+   "osm_id": "node/4899871487"
+  },
+  {
+   "lat": -23.564729,
+   "lon": -46.6506042,
+   "tipo": "escola",
+   "nome": "Objetivo",
+   "osm_id": "node/4947759384"
+  },
+  {
+   "lat": -23.5579865,
+   "lon": -46.6521019,
+   "tipo": "escola",
+   "nome": "Centro de Pesquisa e Formação SESC",
+   "osm_id": "node/6960270949"
+  },
+  {
+   "lat": -23.5628052,
+   "lon": -46.6491895,
+   "tipo": "clínica",
+   "nome": "Posto de Saúde Bela Vista e Jardins - UBS Nossa Senhora do Brasil",
+   "osm_id": "node/7771601411"
+  },
+  {
+   "lat": -23.5652595,
+   "lon": -46.6511894,
+   "tipo": "escola",
+   "nome": "Colégio Objetivo",
+   "osm_id": "node/9976360154"
+  },
+  {
+   "lat": -23.5675818,
+   "lon": -46.6547127,
+   "tipo": "clínica",
+   "nome": "Clínica Tovo",
+   "osm_id": "node/10276420006"
+  },
+  {
+   "lat": -23.5606797,
+   "lon": -46.6606968,
+   "tipo": "escola",
+   "nome": "Plano A - Educação",
+   "osm_id": "node/12301584970"
+  },
+  {
+   "lat": -23.5628337,
+   "lon": -46.6550651,
+   "tipo": "acesso ao metrô",
+   "nome": "sem nome",
+   "osm_id": "node/13792611618"
+  },
+  {
+   "lat": -23.5631435,
+   "lon": -46.6546789,
+   "tipo": "acesso ao metrô",
+   "nome": "sem nome",
+   "osm_id": "node/13792611619"
+  },
+  {
+   "lat": -23.5634483,
+   "lon": -46.6542873,
+   "tipo": "acesso ao metrô",
+   "nome": "sem nome",
+   "osm_id": "node/13792611620"
+  },
+  {
+   "lat": -23.5625978,
+   "lon": -46.6548775,
+   "tipo": "acesso ao metrô",
+   "nome": "sem nome",
+   "osm_id": "node/13792611621"
+  },
+  {
+   "lat": -23.5704613,
+   "lon": -46.648755,
+   "tipo": "hospital",
+   "nome": "Hospital de Transplantes do Estado de São Paulo Euryclides de Jesus Zerbini",
+   "osm_id": "node/13806067928"
+  },
+  {
+   "lat": -23.5574648,
+   "lon": -46.6537663,
+   "tipo": "hospital",
+   "nome": "Hospital Sírio Libanês",
+   "osm_id": "way/191510469"
+  },
+  {
+   "lat": -23.5608581,
+   "lon": -46.650909,
+   "tipo": "hospital",
+   "nome": "Hospital IGESP",
+   "osm_id": "way/199918914"
+  },
+  {
+   "lat": -23.563692,
+   "lon": -46.6587454,
+   "tipo": "escola",
+   "nome": "Colégio Dante Alighieri",
+   "osm_id": "way/204739192"
+  },
+  {
+   "lat": -23.5692864,
+   "lon": -46.6430043,
+   "tipo": "hospital",
+   "nome": "Hospital Alemão Oswaldo Cruz",
+   "osm_id": "way/369787169"
+  },
+  {
+   "lat": -23.5696204,
+   "lon": -46.6453292,
+   "tipo": "hospital",
+   "nome": "Hospital Santa Catarina",
+   "osm_id": "way/412604184"
+  },
+  {
+   "lat": -23.5706447,
+   "lon": -46.6601565,
+   "tipo": "equipamento de assistência social",
+   "nome": "Unimed Nacional - Espaço Saúde",
+   "osm_id": "way/416295843"
+  },
+  {
+   "lat": -23.5602656,
+   "lon": -46.6473587,
+   "tipo": "hospital",
+   "nome": "Hospital Municipal Infantil Menino Jesus",
+   "osm_id": "way/423734886"
+  },
+  {
+   "lat": -23.5570606,
+   "lon": -46.6500328,
+   "tipo": "escola",
+   "nome": "Colégio Vital Brazil",
+   "osm_id": "way/423735379"
+  },
+  {
+   "lat": -23.5674281,
+   "lon": -46.6428331,
+   "tipo": "hospital",
+   "nome": "sem nome",
+   "osm_id": "way/440021508"
+  },
+  {
+   "lat": -23.5705137,
+   "lon": -46.6498077,
+   "tipo": "escola",
+   "nome": "Colegio Santa Catarina de Sena",
+   "osm_id": "way/1036304933"
+  },
+  {
+   "lat": -23.5650919,
+   "lon": -46.646819,
+   "tipo": "hospital",
+   "nome": "Hospital Samaritano",
+   "osm_id": "way/1085505167"
+  },
+  {
+   "lat": -23.5630846,
+   "lon": -46.645396,
+   "tipo": "equipamento de assistência social",
+   "nome": "Cras Mulheres",
+   "osm_id": "way/1171586422"
+  },
+  {
+   "lat": -23.5721207,
+   "lon": -46.6469386,
+   "tipo": "hospital",
+   "nome": "Santa Maria",
+   "osm_id": "way/1217778553"
+  },
+  {
+   "lat": -23.559289,
+   "lon": -46.6552815,
+   "tipo": "hospital",
+   "nome": "Hospital Nove de Julho",
+   "osm_id": "way/1221374253"
+  },
+  {
+   "lat": -23.5681895,
+   "lon": -46.6608507,
+   "tipo": "clínica",
+   "nome": "INdermatologia",
+   "osm_id": "way/1227203762"
+  },
+  {
+   "lat": -23.5701382,
+   "lon": -46.6604211,
+   "tipo": "escola",
+   "nome": "sem nome",
+   "osm_id": "way/1229059092"
+  },
+  {
+   "lat": -23.5575979,
+   "lon": -46.6550455,
+   "tipo": "clínica",
+   "nome": "sem nome",
+   "osm_id": "way/1447149574"
+  },
+  {
+   "lat": -23.5701811,
+   "lon": -46.6465309,
+   "tipo": "escola",
+   "nome": "Escola Estadual Rodrigues Alves",
+   "osm_id": "way/1453919971"
+  },
+  {
+   "lat": -23.5717067,
+   "lon": -46.6447061,
+   "tipo": "clínica",
+   "nome": "Porto Medicina",
+   "osm_id": "way/1453922887"
+  },
+  {
+   "lat": -23.5695345,
+   "lon": -46.6605755,
+   "tipo": "escola",
+   "nome": "Colégio Assunção",
+   "osm_id": "relation/12128508"
+  }
+ ]
+}

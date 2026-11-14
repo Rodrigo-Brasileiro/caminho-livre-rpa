@@ -1,0 +1,46 @@
+test_categoria_diferente_nao_e_duplicata (test_regras.TestDuplicata.test_categoria_diferente_nao_e_duplicata) ... ok
+test_mesmo_ponto_mesma_categoria_aberto (test_regras.TestDuplicata.test_mesmo_ponto_mesma_categoria_aberto) ... ok
+test_ponto_a_50m_nao_e_duplicata (test_regras.TestDuplicata.test_ponto_a_50m_nao_e_duplicata) ... ok
+test_relato_resolvido_nao_bloqueia_novo (test_regras.TestDuplicata.test_relato_resolvido_nao_bloqueia_novo) ... ok
+test_campos_proibidos_saem_do_log (test_regras.TestLgpd.test_campos_proibidos_saem_do_log) ... ok
+test_contato_marca_pii_e_nao_entra_na_descricao (test_regras.TestLgpd.test_contato_marca_pii_e_nao_entra_na_descricao) ... ok
+test_remove_telefone_email_cpf (test_regras.TestLgpd.test_remove_telefone_email_cpf) ... ok
+test_alta_rampa_perto_de_hospital_ha_2_dias (test_regras.TestPrioridade.test_alta_rampa_perto_de_hospital_ha_2_dias) ... ok
+test_baixa_calcada_nova_sem_fatores (test_regras.TestPrioridade.test_baixa_calcada_nova_sem_fatores) ... ok
+test_chuva_abaixo_do_limite_nao_soma (test_regras.TestPrioridade.test_chuva_abaixo_do_limite_nao_soma) ... ok
+test_idade_tem_teto (test_regras.TestPrioridade.test_idade_tem_teto) ... ok
+test_media_travessia_com_chuva (test_regras.TestPrioridade.test_media_travessia_com_chuva) ... ok
+test_recorrencia (test_regras.TestPrioridade.test_recorrencia) ... ok
+test_categoria_com_acento_e_sinonimo (test_regras.TestValidacao.test_categoria_com_acento_e_sinonimo) ... ok
+test_coordenada_com_virgula_de_planilha (test_regras.TestValidacao.test_coordenada_com_virgula_de_planilha) ... ok
+test_decisao_categoria_desconhecida (test_regras.TestValidacao.test_decisao_categoria_desconhecida) ... ok
+test_decisao_coordenada_ausente (test_regras.TestValidacao.test_decisao_coordenada_ausente) ... ok
+test_decisao_fora_do_territorio (test_regras.TestValidacao.test_decisao_fora_do_territorio) ... ok
+test_linha_valida (test_regras.TestValidacao.test_linha_valida) ... ok
+test_alta_vai_para_em_analise_e_baixa_continua_pendente (test_robo.TestDecisao.test_alta_vai_para_em_analise_e_baixa_continua_pendente) ... ok
+test_chuva_forte_sobe_prioridade (test_robo.TestDecisao.test_chuva_forte_sobe_prioridade) ... ok
+test_duplicata_de_relato_ja_aberto_nao_e_criada (test_robo.TestDecisao.test_duplicata_de_relato_ja_aberto_nao_e_criada) ... ok
+test_linhas_invalidas_sao_rejeitadas_e_as_validas_seguem (test_robo.TestDecisao.test_linhas_invalidas_sao_rejeitadas_e_as_validas_seguem) ... ok
+test_robo_nunca_resolve_nem_descarta (test_robo.TestDecisao.test_robo_nunca_resolve_nem_descarta) ... ok
+test_sem_token_so_prioriza (test_robo.TestDecisao.test_sem_token_so_prioriza) ... ok
+test_arquivo_invalido_vai_para_quarentena (test_robo.TestFalha.test_arquivo_invalido_vai_para_quarentena) ... ok
+test_execucao_concorrente_e_ignorada (test_robo.TestFalha.test_execucao_concorrente_e_ignorada) ... ok
+test_mvp_cai_no_meio_do_lote_e_retoma_sem_duplicar (test_robo.TestFalha.test_mvp_cai_no_meio_do_lote_e_retoma_sem_duplicar) ... ok
+test_mvp_fora_do_ar_termina_em_falha_registrada (test_robo.TestFalha.test_mvp_fora_do_ar_termina_em_falha_registrada) ... ok
+test_mvp_instavel_recupera_com_nova_tentativa (test_robo.TestFalha.test_mvp_instavel_recupera_com_nova_tentativa) ... ok
+test_open_meteo_fora_degrada_sem_parar (test_robo.TestFalha.test_open_meteo_fora_degrada_sem_parar) ... ok
+test_overpass_fora_sem_cache_nem_snapshot_segue_sem_o_fator (test_robo.TestFalha.test_overpass_fora_sem_cache_nem_snapshot_segue_sem_o_fator) ... ok
+test_overpass_fora_sem_cache_usa_snapshot_versionado (test_robo.TestFalha.test_overpass_fora_sem_cache_usa_snapshot_versionado) ... ok
+test_overpass_fora_usa_cache_antigo (test_robo.TestFalha.test_overpass_fora_usa_cache_antigo) ... ok
+test_pasta_de_entrada_ausente_nao_derruba_o_robo (test_robo.TestFalha.test_pasta_de_entrada_ausente_nao_derruba_o_robo) ... ok
+test_token_errado_termina_em_falha (test_robo.TestFalha.test_token_errado_termina_em_falha) ... ok
+test_dado_pessoal_nao_vai_ao_mvp_nem_ao_log (test_robo.TestLgpdNoFluxo.test_dado_pessoal_nao_vai_ao_mvp_nem_ao_log) ... ok
+test_executar_completo_gera_fila_e_indicadores (test_robo.TestSucesso.test_executar_completo_gera_fila_e_indicadores) ... ok
+test_idempotente_rodar_duas_vezes_nao_duplica (test_robo.TestSucesso.test_idempotente_rodar_duas_vezes_nao_duplica) ... ok
+test_importa_lote_e_move_para_processados (test_robo.TestSucesso.test_importa_lote_e_move_para_processados) ... ok
+test_simulacao_nao_altera_nada (test_robo.TestSucesso.test_simulacao_nao_altera_nada) ... ok
+
+----------------------------------------------------------------------
+Ran 41 tests in 11.468s
+
+OK

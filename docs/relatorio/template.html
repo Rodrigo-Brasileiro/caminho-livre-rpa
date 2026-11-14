@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Relatório Técnico RPA · Caminho Livre</title>
+<style>
+  @page { size: A4; margin: 16mm 15mm 16mm 15mm; }
+  :root { --azul:#0b5cab; --tinta:#1b1f24; --cinza:#5b6570; --linha:#d8dde3; --fundo:#f4f6f8; }
+  * { box-sizing: border-box; }
+  body { font: 10.5pt/1.5 "Segoe UI", Roboto, Arial, sans-serif; color: var(--tinta); margin: 0; }
+  h1 { font-size: 24pt; margin: 0 0 6px; line-height: 1.15; }
+  h2 { font-size: 14pt; color: var(--azul); margin: 22px 0 8px; padding-bottom: 4px; border-bottom: 2px solid var(--azul); break-after: avoid; }
+  h3 { font-size: 11.5pt; margin: 14px 0 6px; break-after: avoid; }
+  p { margin: 0 0 8px; }
+  ul { margin: 0 0 8px; padding-left: 20px; }
+  li { margin: 2px 0; }
+  table { width: 100%; border-collapse: collapse; margin: 6px 0 12px; font-size: 9.5pt; break-inside: auto; }
+  th, td { border: 1px solid var(--linha); padding: 5px 7px; text-align: left; vertical-align: top; }
+  th { background: var(--fundo); font-weight: 600; }
+  tr { break-inside: avoid; }
+  code { font-family: Consolas, "Cascadia Mono", monospace; font-size: 9pt; background: var(--fundo); padding: 0 3px; border-radius: 3px; }
+  pre { font-family: Consolas, "Cascadia Mono", monospace; font-size: 7.6pt; line-height: 1.4; background: #0f1720; color: #dfe6ee;
+        padding: 10px 12px; border-radius: 6px; white-space: pre-wrap; word-break: break-all; margin: 6px 0 12px; break-inside: avoid; }
+  figure { margin: 8px 0 14px; break-inside: avoid; }
+  figure img { width: 100%; border: 1px solid var(--linha); border-radius: 4px; }
+  figcaption { font-size: 8.5pt; color: var(--cinza); margin-top: 4px; }
+  .capa { height: 255mm; display: flex; flex-direction: column; justify-content: space-between; break-after: page; }
+  .capa .topo { color: var(--cinza); font-size: 10pt; letter-spacing: .04em; text-transform: uppercase; }
+  .capa .sub { font-size: 13pt; color: var(--cinza); margin-bottom: 26px; }
+  .capa table { font-size: 10.5pt; }
+  .tag { display: inline-block; background: var(--azul); color: #fff; border-radius: 3px; padding: 1px 7px; font-size: 8.5pt; font-weight: 600; }
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 8px 0 14px; }
+  .kpi { border: 1px solid var(--linha); border-radius: 6px; padding: 8px 10px; }
+  .kpi b { display: block; font-size: 16pt; color: var(--azul); }
+  .kpi span { font-size: 8.5pt; color: var(--cinza); }
+  .nota { background: #fff7e0; border-left: 4px solid #e0a800; padding: 8px 10px; margin: 8px 0 12px; font-size: 9.5pt; }
+  .quebra { break-before: page; }
+  .bpmn { width: 100%; }
+  a { color: var(--azul); }
+</style>
+</head>
+<body>
+
+<section class="capa">
+  <div>
+    <div class="topo">FIAP · Global Solution 2026.2 · CitizenTech · Engenharia de Software 4º ano</div>
+    <div style="margin-top:70px">
+      <span class="tag">Robotic Process Automation</span>
+      <h1 style="margin-top:12px">Caminho Livre<br>Robô de importação e triagem de barreiras de acessibilidade</h1>
+      <div class="sub">Relatório técnico · Do Processo Manual à Automação Inteligente</div>
+    </div>
+    <table>
+      <tr><th style="width:62%">Integrante</th><th>RM</th></tr>
+      <tr><td>Guilherme Rocha Bianchini</td><td>RM97974</td></tr>
+      <tr><td>Nikolas Rodrigues Moura dos Santos</td><td>RM551566</td></tr>
+      <tr><td>Thiago Jardim de Oliveira</td><td>RM551624</td></tr>
+      <tr><td>Rodrigo Brasileiro</td><td>RM98952</td></tr>
+    </table>
+  </div>
+  <table>
+    <tr><th style="width:30%">Professores</th><td>Bruno Diniz e Cibele Ribeiro</td></tr>
+    <tr><th>Repositório da automação</th><td><a href="$REPO_URL">$REPO_URL</a></td></tr>
+    <tr><th>Vídeo demonstrativo</th><td><a href="$VIDEO_URL">$VIDEO_URL</a></td></tr>
+    <tr><th>MVP público</th><td><a href="https://caminholivre-gs.azurewebsites.net">https://caminholivre-gs.azurewebsites.net</a></td></tr>
+    <tr><th>Repositório do MVP</th><td><a href="https://github.com/santos-nikolas/caminho-livre">https://github.com/santos-nikolas/caminho-livre</a></td></tr>
+    <tr><th>Data</th><td>$DATA</td></tr>
+  </table>
+</section>
+
+<h2>1. Identificação da CitizenTech e problema resolvido</h2>
+<p><b>Caminho Livre</b> é um mapa colaborativo para identificar, organizar e acompanhar barreiras de acessibilidade em calçadas e travessias: rampas bloqueadas, calçadas obstruídas e travessias com barreira. O público são pedestres com deficiência ou mobilidade reduzida, idosos e cuidadores. O piloto cobre o entorno do campus FIAP Paulista (São Paulo, SP), cerca de 1,2 km × 1,5 km.</p>
+<table>
+  <tr><th style="width:26%">Problema do cidadão</th><td>As barreiras são relatadas de forma dispersa e ninguém acompanha se foram resolvidas.</td></tr>
+  <tr><th>Problema operacional (alvo desta automação)</th><td>Mesmo com o mapa no ar, dois trabalhos continuam manuais nos bastidores: <b>(1)</b> redigitar no mapa os relatos que chegam por planilha (central 156, vistorias de agentes, ONGs parceiras), com dados pessoais e duplicatas no meio; <b>(2)</b> olhar relato por relato e decidir, sem critério registrado, o que é urgente.</td></tr>
+  <tr><th>ODS</th><td>ODS 10 (redução das desigualdades) e ODS 11 (metas 11.2 e 11.7: acesso seguro e inclusivo a espaços públicos).</td></tr>
+</table>
+
+<h2>2. Objetivo da automação e benefício para o cidadão</h2>
+<p>Desenvolver um robô que roda sozinho de hora em hora, conecta os canais externos e as fontes públicas de dados ao MVP e entrega ao gestor uma fila priorizada e explicada, com auditoria completa de cada passo.</p>
+<table>
+  <tr><th style="width:50%">Antes (manual)</th><th>Depois (robô)</th></tr>
+  <tr><td>Alguém redigita cada linha das planilhas no mapa.</td><td>O robô lê a pasta <code>entrada/</code>, valida, limpa e cria os relatos pela API.</td></tr>
+  <tr><td>Nome e telefone de quem relatou circulam nas planilhas.</td><td>Os dados pessoais são descartados antes do envio e nunca aparecem no log.</td></tr>
+  <tr><td>A mesma barreira entra duas vezes, por canais diferentes.</td><td>Duplicatas a até 15 m, da mesma categoria, são detectadas.</td></tr>
+  <tr><td>O gestor decide no olho o que é urgente.</td><td>Score explicável, cruzado com hospitais, escolas e metrô (OpenStreetMap) e com a previsão de chuva (Open-Meteo).</td></tr>
+  <tr><td>Casos urgentes esperam alguém perceber.</td><td>Relatos ALTA vão para "em análise" no MVP e o gestor recebe um push.</td></tr>
+</table>
+<p><b>Benefício para o cidadão:</b> o relato feito por telefone na central 156 chega ao mapa, e o cidadão pode acompanhar o status como qualquer outro. A barreira em frente a um hospital ou numa saída de metrô é atendida antes. O status "em análise" dá um retorno visível de que o relato foi visto.</p>
+
+<h2 class="quebra">3. Descrição do processo e desenho do fluxo</h2>
+<p>O desenho completo está em BPMN 2.0 (<code>docs/processo-robo.bpmn</code>, que abre no bpmn.io ou no Camunda Modeler). A figura abaixo mostra o processo de ponta a ponta. Na linha de cima ficam o início e a etapa 1 (importação), e na de baixo a etapa 2 (triagem). Tarefas com o símbolo ↻ repetem para cada item, e os eventos de erro mostram onde as exceções são tratadas.</p>
+<figure><img class="bpmn" src="../../assets/bpmn-processo-robo.png" alt="Diagrama BPMN do robô"><figcaption>Figura 1: processo do robô em BPMN 2.0.</figcaption></figure>
+
+<h3>PDD resumido (Process Definition Document)</h3>
+<table>
+  <tr><th style="width:20%">Início</th><td>Evento de tempo: a cada hora (cron do GitHub Actions). Também pode ser iniciado por <code>python rodar.py</code> ou por <i>workflow_dispatch</i>.</td></tr>
+  <tr><th>Entradas</th><td>CSVs em <code>entrada/</code> (colunas <code>latitude; longitude; categoria; descricao; canal; contato</code>). API do MVP (<code>/health</code>, <code>/api/config</code>, <code>/api/reports</code>). Open-Meteo (chuva em 24 h). OpenStreetMap via Overpass (locais sensíveis).</td></tr>
+  <tr><th>Etapas</th><td>0. Trava contra execução dupla e checagem de saúde do MVP.<br>1. <b>Importação:</b> para cada arquivo → para cada linha: validar e normalizar, remover dados pessoais, checar idempotência e duplicata, criar o relato.<br>2. <b>Triagem:</b> consultar os fatores externos → para cada relato aberto: calcular o score e decidir a ação → gravar fila, indicadores e resumo → notificar.</td></tr>
+  <tr><th>Decisões</th><td>MVP no ar? · CSV válido? · Linha válida e no território? · Duplicata ou já importada? · Prioridade ALTA e pendente? · Houve ALTA para notificar?</td></tr>
+  <tr><th>Repetições</th><td>Arquivos do lote · linhas de cada arquivo · relatos abertos · novas tentativas HTTP.</td></tr>
+  <tr><th>Exceções</th><td>MVP fora ou instável · queda no meio do lote · 422 do MVP · token inválido · arquivo vazio, inválido ou em formato errado · fonte externa fora · execução concorrente · erro inesperado (ver seção 6).</td></tr>
+  <tr><th>Saídas</th><td>Relatos criados e status alterados no MVP · <code>saida/fila_priorizada.json</code> e <code>.csv</code> · <code>saida/indicadores.json</code> · <code>saida/execucoes/&lt;run_id&gt;.json</code> · <code>logs/robo-AAAA-MM-DD.jsonl</code> · arquivos em <code>processados/</code> ou <code>quarentena/</code> · push ntfy.</td></tr>
+</table>
+
+<h2>4. Tecnologias utilizadas e justificativa</h2>
+<table>
+  <tr><th style="width:24%">Tecnologia</th><th>Uso e justificativa</th></tr>
+  <tr><td>Python 3.11+ (só biblioteca padrão)</td><td>Todas as fontes têm API, então não há tela para o robô clicar e um RPA de interface (UiPath ou Power Automate Desktop) seria mais frágil. Em Python o robô é versionado, testado no CI e reproduzível sem instalar nada: <code>urllib</code> (HTTP), <code>csv</code>, <code>sqlite3</code> (estado), <code>unittest</code>.</td></tr>
+  <tr><td>GitHub Actions</td><td>Agendador gratuito (cron de hora em hora), segredos protegidos, artefatos de log por execução. É o mesmo CI que a equipe usa no componente de DevOps.</td></tr>
+  <tr><td>API FastAPI do MVP</td><td>Contrato de integração real: criar relatos, listar e mudar status com token de gestor.</td></tr>
+  <tr><td>OpenStreetMap (Overpass API)</td><td>Dado aberto (ODbL) com hospitais, clínicas, escolas, assistência social e acessos ao metrô do território.</td></tr>
+  <tr><td>Open-Meteo</td><td>Previsão de chuva sem chave de API. Com chuva, uma barreira obriga o pedestre a desviar pela rua molhada.</td></tr>
+  <tr><td>SQLite local</td><td>Idempotência (impressão digital de cada linha) e cache das fontes externas.</td></tr>
+  <tr><td>ntfy.sh</td><td>Push para o gestor. É o mesmo canal dos alertas de observabilidade do MVP.</td></tr>
+  <tr><td>BPMN 2.0 (bpmn.io)</td><td>Desenho do processo em formato padrão e editável.</td></tr>
+</table>
+
+<h2 class="quebra">5. Regras de negócio, decisões e processamento</h2>
+<h3>5.1 Validação de cada linha</h3>
+<ul>
+  <li>Coordenada obrigatória e numérica. Aceita vírgula decimal (<code>-23,5646</code>), comum no Excel em português.</li>
+  <li>Dentro do território do piloto. O robô lê o retângulo oficial de <code>GET /api/config</code>, então a regra é a mesma do MVP.</li>
+  <li>Categoria reconhecida, com normalização de acentos e sinônimos ("Calçada obstruída", "rampa", "faixa sem rebaixamento"…).</li>
+  <li>Descrição mascarada (telefone, e-mail e CPF viram <code>[removido]</code>), com o canal de origem anotado e limite de 280 caracteres.</li>
+  <li>Linha inválida é rejeitada com o motivo no log. As demais seguem.</li>
+</ul>
+<h3>5.2 Duplicata e idempotência</h3>
+<ul>
+  <li><b>Duplicata:</b> já existe um relato aberto (pendente ou em análise) da mesma categoria a até 15 m. Nesse caso a linha não é criada.</li>
+  <li><b>Idempotência:</b> SHA-256 da linha já normalizada e mascarada. Reprocessar a mesma planilha não cria nada novo.</li>
+</ul>
+<h3>5.3 Prioridade explicável</h3>
+<table>
+  <tr><th>Fator</th><th style="width:28%">Pontos</th></tr>
+  <tr><td>Categoria: rampa bloqueada / travessia com barreira / calçada obstruída</td><td>40 / 35 / 25</td></tr>
+  <tr><td>Cada dia aberto</td><td>+5 (teto 30)</td></tr>
+  <tr><td>Hospital, clínica, escola, assistência social ou acesso ao metrô a ≤ 100 m / ≤ 200 m</td><td>+20 / +10</td></tr>
+  <tr><td>Chuva prevista ≥ 5 mm nas próximas 24 h</td><td>+10</td></tr>
+  <tr><td>Outros relatos abertos a até 30 m (recorrência)</td><td>+10 cada (teto 20)</td></tr>
+</table>
+<p><b>Classificação:</b> ALTA ≥ 70 (prazo sugerido de 2 dias) · MÉDIA ≥ 45 (7 dias) · BAIXA &lt; 45 (15 dias). Cada item da fila carrega a lista de motivos. Exemplo real da execução contra a produção:</p>
+<pre>$EXEMPLO_FILA_PRODUCAO</pre>
+<h3>5.4 Ação e pessoa no circuito</h3>
+<p>Só relatos <b>ALTA ainda pendentes</b> mudam para <code>em_analise</code>, via <code>PATCH</code> com o token de gestor. O robô <b>nunca</b> marca <code>resolvido</code> nem <code>descartado</code>: essas decisões afetam o cidadão e ficam com uma pessoa. Há um teste automatizado que garante isso.</p>
+
+<h2>6. Tratamento de exceções e recuperação</h2>
+<table>
+  <tr><th style="width:32%">Falha prevista</th><th>Reação do robô</th></tr>
+  <tr><td>MVP fora do ar, timeout ou HTTP 5xx/429</td><td>3 tentativas com backoff exponencial (2 s, 4 s). Se persistir: status <b>FALHA</b>, código de saída 1 (a execução fica vermelha no Actions), push para o gestor, e o arquivo continua na entrada.</td></tr>
+  <tr><td>MVP cai no meio de um lote</td><td>Interrompe e mantém o arquivo. As linhas já enviadas ficam registradas, então na próxima execução só as restantes são enviadas.</td></tr>
+  <tr><td>MVP recusa a linha (422)</td><td>Registra o motivo, marca a linha como rejeitada e segue.</td></tr>
+  <tr><td>Token de gestor inválido (401/403)</td><td>FALHA explícita <code>token_invalido</code>, sem novas tentativas.</td></tr>
+  <tr><td>Token ausente</td><td>Prioriza e grava a fila, mas não altera status. Alerta no log.</td></tr>
+  <tr><td>Arquivo vazio, sem colunas obrigatórias, binário ou <code>.xlsx</code></td><td>Vai para <code>entrada/quarentena/</code> com um arquivo <code>.motivo.txt</code>. Os demais arquivos seguem.</td></tr>
+  <tr><td>Dados duplicados ou inconsistentes</td><td>Duplicata ignorada com referência ao relato existente. Coordenada fora do território, impossível ou categoria desconhecida são rejeitadas com motivo.</td></tr>
+  <tr><td>Open-Meteo fora</td><td>Degrada: segue sem o fator chuva e registra <code>fatores_indisponiveis</code> na fila.</td></tr>
+  <tr><td>Overpass (OSM) fora</td><td>Tenta o espelho, depois o cache local (7 dias), depois o snapshot versionado em <code>dados/</code>, e só então segue sem o fator. Isso aconteceu de verdade durante o desenvolvimento: o Overpass devolveu 502 e timeout.</td></tr>
+  <tr><td>Execução concorrente</td><td>Trava em arquivo: a segunda execução é ignorada, com registro. Trava esquecida há mais de 30 min é liberada.</td></tr>
+  <tr><td>Erro inesperado</td><td>Capturado no orquestrador, registrado com o tipo e terminado com status FALHA. <b>Nenhuma falha silenciosa.</b></td></tr>
+</table>
+
+<h2 class="quebra">7. Logs e evidências de auditoria</h2>
+<p>Cada evento é uma linha JSON em <code>logs/robo-AAAA-MM-DD.jsonl</code> com data e hora UTC, <code>run_id</code>, nível, etapa, evento, mensagem e referência (arquivo e linha, ou id do relato). Cada execução também grava um resumo com início, fim, status, contadores, alertas e erros. Antes de gravar, o robô remove os campos <code>contato</code>, <code>nome</code>, <code>telefone</code>, <code>email</code> e <code>descricao</code> e mascara telefone, e-mail e CPF em qualquer texto.</p>
+<h3>Trecho do log: demonstração local (sucesso, decisão e falha)</h3>
+<pre>$LOG_DEMO</pre>
+<h3>Resumo da execução contra o MVP em produção (modo simulação)</h3>
+<pre>$RESUMO_PRODUCAO</pre>
+<p>As amostras completas estão em <code>logs/amostras/</code>. No agendamento, os logs de cada execução ficam como artefatos do GitHub Actions por 30 dias.</p>
+
+<h2>8. Integração com o MVP</h2>
+<table>
+  <tr><th style="width:22%">Direção</th><th>Contrato</th></tr>
+  <tr><td>Robô → MVP</td><td><code>POST /api/reports</code> cria os relatos importados · <code>PATCH /api/admin/reports/{id}</code> com <code>{"status":"em_analise"}</code> e <code>Authorization: Bearer &lt;token de gestor&gt;</code>.</td></tr>
+  <tr><td>MVP → Robô</td><td><code>GET /health</code> (saúde e versão) · <code>GET /api/config</code> (território) · <code>GET /api/reports</code> (relatos para duplicata e triagem).</td></tr>
+  <tr><td>Robô → gestor e BI</td><td><code>saida/fila_priorizada.json</code> e <code>.csv</code> (fila ordenada com motivos) · <code>saida/indicadores.json</code> (os indicadores de impacto da Ficha Técnica: recebidos, revisados, resolvidos, taxa de resolução, tempo até revisão), escritos de forma atômica.</td></tr>
+</table>
+<p>O resultado aparece no próprio MVP: os relatos importados viram pins novos no mapa e os de prioridade ALTA passam a "em análise", visível para o cidadão.</p>
+<figure><img src="../../assets/mvp-mapa-producao.png" alt="MVP Caminho Livre em produção"><figcaption>Figura 2: MVP em produção (https://caminholivre-gs.azurewebsites.net), que o robô consome e atualiza.</figcaption></figure>
+$FIGURA_INTEGRACAO
+
+<h2 class="quebra">9. Testes realizados</h2>
+<div class="kpis">
+  <div class="kpi"><b>$N_TESTES</b><span>testes automatizados</span></div>
+  <div class="kpi"><b>$RESULTADO</b><span>resultado da última execução</span></div>
+  <div class="kpi"><b>0</b><span>dependências externas</span></div>
+  <div class="kpi"><b>CI</b><span>rodam a cada push</span></div>
+</div>
+<p>Os testes de ponta a ponta sobem um <b>MVP falso</b> (<code>tests/mvp_falso.py</code>) com as mesmas rotas, regras de território e token do MVP real, além de falhas programáveis (rota fora do ar, 503 N vezes). Comando: <code>PYTHONPATH=src:tests python -m unittest discover -s tests -v</code>.</p>
+<table>
+  <tr><th style="width:14%">Tipo</th><th>Cenário testado</th><th style="width:11%">Resultado</th></tr>
+$TABELA_TESTES
+</table>
+<p>A saída completa está em <code>tests/evidencias/resultado-testes.txt</code>. Também houve execução manual contra a produção, em modo simulação, com os resultados reais da seção 7.</p>
+
+<h2>10. Segurança e LGPD</h2>
+<ul>
+  <li><b>Credenciais fora do código:</b> o token de gestor fica só em variável de ambiente (<code>.env</code>, ignorado pelo Git) ou nos segredos do GitHub Actions.</li>
+  <li><b>Minimização:</b> a coluna <code>contato</code> nunca é enviada. Telefone, e-mail e CPF na descrição são trocados por <code>[removido]</code> antes do envio. O MVP também sanitiza, então são duas camadas.</li>
+  <li><b>Logs sem dado pessoal:</b> filtro de campos e mascaramento em toda mensagem. Um teste automatizado procura nome, telefone e e-mail no log e no que foi enviado ao MVP.</li>
+  <li><b>Idempotência sem dado pessoal:</b> o hash é calculado sobre os dados já mascarados.</li>
+  <li><b>Localização aproximada:</b> coordenadas com 4 casas (~11 m), a mesma precisão do MVP.</li>
+  <li><b>Menor privilégio e pessoa no circuito:</b> o robô só move para "em análise". Resolver e descartar ficam com o gestor.</li>
+  <li><b>Transparência:</b> cada prioridade traz os motivos. Os dados de exemplo são fictícios e marcados com <code>[demonstração]</code>.</li>
+  <li><b>Fontes abertas com licença respeitada:</b> OpenStreetMap (ODbL, com atribuição) e Open-Meteo (uso não comercial).</li>
+</ul>
+
+<h2>11. Links</h2>
+<table>
+  <tr><th style="width:30%">Repositório GitHub (automação)</th><td><a href="$REPO_URL">$REPO_URL</a></td></tr>
+  <tr><th>Vídeo demonstrativo (até 3 min)</th><td><a href="$VIDEO_URL">$VIDEO_URL</a></td></tr>
+  <tr><th>MVP público</th><td><a href="https://caminholivre-gs.azurewebsites.net">https://caminholivre-gs.azurewebsites.net</a></td></tr>
+  <tr><th>Repositório do MVP</th><td><a href="https://github.com/santos-nikolas/caminho-livre">https://github.com/santos-nikolas/caminho-livre</a></td></tr>
+</table>
+
+</body>
+</html>
