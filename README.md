@@ -11,7 +11,7 @@ Este repositório traz o componente **Automação** do MVP [Caminho Livre](https
 |---|---|
 | **MVP (público)** | https://caminholivre-gs.azurewebsites.net |
 | **Repositório do MVP** | https://github.com/santos-nikolas/caminho-livre |
-| **Vídeo da automação** | _adicionar o link do vídeo_ |
+| **Vídeo da automação** | https://www.youtube.com/watch?v=SV06vN_nMxM |
 | **Relatório técnico** | [`docs/relatorio-rpa.pdf`](docs/relatorio-rpa.pdf) |
 | **Desenho do processo (BPMN)** | [`docs/processo-robo.bpmn`](docs/processo-robo.bpmn) · [imagem](assets/bpmn-processo-robo.png) |
 
