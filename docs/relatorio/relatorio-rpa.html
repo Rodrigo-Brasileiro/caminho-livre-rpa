@@ -63,7 +63,7 @@
     <tr><th>Vídeo demonstrativo</th><td><a href="(link do vídeo)">(link do vídeo)</a></td></tr>
     <tr><th>MVP público</th><td><a href="https://caminholivre-gs.azurewebsites.net">https://caminholivre-gs.azurewebsites.net</a></td></tr>
     <tr><th>Repositório do MVP</th><td><a href="https://github.com/santos-nikolas/caminho-livre">https://github.com/santos-nikolas/caminho-livre</a></td></tr>
-    <tr><th>Data</th><td>14/11/2026</td></tr>
+    <tr><th>Data</th><td>17/11/2026</td></tr>
   </table>
 </section>
 
@@ -71,21 +71,22 @@
 <p><b>Caminho Livre</b> é um mapa colaborativo para identificar, organizar e acompanhar barreiras de acessibilidade em calçadas e travessias: rampas bloqueadas, calçadas obstruídas e travessias com barreira. O público são pedestres com deficiência ou mobilidade reduzida, idosos e cuidadores. O piloto cobre o entorno do campus FIAP Paulista (São Paulo, SP), cerca de 1,2 km × 1,5 km.</p>
 <table>
   <tr><th style="width:26%">Problema do cidadão</th><td>As barreiras são relatadas de forma dispersa e ninguém acompanha se foram resolvidas.</td></tr>
-  <tr><th>Problema operacional (alvo desta automação)</th><td>Mesmo com o mapa no ar, dois trabalhos continuam manuais nos bastidores: <b>(1)</b> redigitar no mapa os relatos que chegam por planilha (central 156, vistorias de agentes, ONGs parceiras), com dados pessoais e duplicatas no meio; <b>(2)</b> olhar relato por relato e decidir, sem critério registrado, o que é urgente.</td></tr>
+  <tr><th>Problema operacional (alvo desta automação)</th><td>Mesmo com o mapa no ar, dois trabalhos continuam manuais nos bastidores: <b>(1)</b> redigitar no mapa os relatos que chegam fora do app, em planilha, com dados pessoais e duplicatas no meio; <b>(2)</b> olhar relato por relato e decidir, sem critério registrado, o que é urgente.</td></tr>
+  <tr><th>O que é real e o que é cenário</th><td>A triagem roda sozinha no GitHub Actions contra o MVP público e já mudou relatos para "em análise" em produção (seção 8). A importação também funciona contra o MVP real, mas <b>não há convênio com a central 156, vistorias ou ONGs</b>: esses canais são o cenário que justifica a automação, e a planilha de exemplo é fictícia, com cada linha marcada como <code>[demonstração]</code>.</td></tr>
   <tr><th>ODS</th><td>ODS 10 (redução das desigualdades) e ODS 11 (metas 11.2 e 11.7: acesso seguro e inclusivo a espaços públicos).</td></tr>
 </table>
 
 <h2>2. Objetivo da automação e benefício para o cidadão</h2>
-<p>Desenvolver um robô que roda sozinho de hora em hora, conecta os canais externos e as fontes públicas de dados ao MVP e entrega ao gestor uma fila priorizada e explicada, com auditoria completa de cada passo.</p>
+<p>Desenvolver um robô que leva ao MVP os relatos recebidos em planilha e que, agendado no GitHub Actions, reavalia sozinho os relatos abertos com dados públicos e entrega ao gestor uma fila priorizada e explicada, com auditoria completa de cada passo.</p>
 <table>
   <tr><th style="width:50%">Antes (manual)</th><th>Depois (robô)</th></tr>
-  <tr><td>Alguém redigita cada linha das planilhas no mapa.</td><td>O robô lê a pasta <code>entrada/</code>, valida, limpa e cria os relatos pela API.</td></tr>
+  <tr><td>Alguém redigita cada linha das planilhas no mapa.</td><td>Quem recebe a planilha a coloca em <code>entrada/</code> e roda <code>python rodar.py importar</code>. O robô valida, limpa e cria os relatos pela API.</td></tr>
   <tr><td>Nome e telefone de quem relatou circulam nas planilhas.</td><td>Os dados pessoais são descartados antes do envio e nunca aparecem no log.</td></tr>
   <tr><td>A mesma barreira entra duas vezes, por canais diferentes.</td><td>Duplicatas a até 15 m, da mesma categoria, são detectadas.</td></tr>
   <tr><td>O gestor decide no olho o que é urgente.</td><td>Score explicável, cruzado com hospitais, escolas e metrô (OpenStreetMap) e com a previsão de chuva (Open-Meteo).</td></tr>
-  <tr><td>Casos urgentes esperam alguém perceber.</td><td>Relatos ALTA vão para "em análise" no MVP e o gestor recebe um push.</td></tr>
+  <tr><td>Casos urgentes esperam alguém perceber.</td><td>A cada execução agendada, relatos ALTA ainda pendentes vão para "em análise" no MVP, sem ninguém disparar nada.</td></tr>
 </table>
-<p><b>Benefício para o cidadão:</b> o relato feito por telefone na central 156 chega ao mapa, e o cidadão pode acompanhar o status como qualquer outro. A barreira em frente a um hospital ou numa saída de metrô é atendida antes. O status "em análise" dá um retorno visível de que o relato foi visto.</p>
+<p><b>Benefício para o cidadão:</b> um relato que chegasse por outro canal entraria no mesmo mapa, com o mesmo acompanhamento de status. A barreira em frente a um hospital ou numa saída de metrô é atendida antes. O status "em análise" dá um retorno visível de que o relato foi visto.</p>
 
 <h2 class="quebra">3. Descrição do processo e desenho do fluxo</h2>
 <p>O desenho completo está em BPMN 2.0 (<code>docs/processo-robo.bpmn</code>, que abre no bpmn.io ou no Camunda Modeler). A figura abaixo mostra o processo de ponta a ponta. Na linha de cima ficam o início e a etapa 1 (importação), e na de baixo a etapa 2 (triagem). Tarefas com o símbolo ↻ repetem para cada item, e os eventos de erro mostram onde as exceções são tratadas.</p>
@@ -93,25 +94,25 @@
 
 <h3>PDD resumido (Process Definition Document)</h3>
 <table>
-  <tr><th style="width:20%">Início</th><td>Evento de tempo: a cada hora (cron do GitHub Actions). Também pode ser iniciado por <code>python rodar.py</code> ou por <i>workflow_dispatch</i>.</td></tr>
+  <tr><th style="width:20%">Início</th><td>Evento de tempo: agendamento do GitHub Actions (<code>cron: "0 * * * *"</code>). O GitHub não garante o horário: entre 14/11 e 17/11/2026 foram 10 execuções, com intervalos de 3,5 a 10 horas. Também pode ser iniciado por <code>python rodar.py</code> ou pelo botão <i>Run workflow</i>. No Actions a pasta <code>entrada/</code> fica vazia (não é versionada, porque as planilhas podem ter dados pessoais), então lá o robô faz a triagem. A importação roda na máquina de quem recebeu a planilha.</td></tr>
   <tr><th>Entradas</th><td>CSVs em <code>entrada/</code> (colunas <code>latitude; longitude; categoria; descricao; canal; contato</code>). API do MVP (<code>/health</code>, <code>/api/config</code>, <code>/api/reports</code>). Open-Meteo (chuva em 24 h). OpenStreetMap via Overpass (locais sensíveis).</td></tr>
   <tr><th>Etapas</th><td>0. Trava contra execução dupla e checagem de saúde do MVP.<br>1. <b>Importação:</b> para cada arquivo → para cada linha: validar e normalizar, remover dados pessoais, checar idempotência e duplicata, criar o relato.<br>2. <b>Triagem:</b> consultar os fatores externos → para cada relato aberto: calcular o score e decidir a ação → gravar fila, indicadores e resumo → notificar.</td></tr>
   <tr><th>Decisões</th><td>MVP no ar? · CSV válido? · Linha válida e no território? · Duplicata ou já importada? · Prioridade ALTA e pendente? · Houve ALTA para notificar?</td></tr>
   <tr><th>Repetições</th><td>Arquivos do lote · linhas de cada arquivo · relatos abertos · novas tentativas HTTP.</td></tr>
   <tr><th>Exceções</th><td>MVP fora ou instável · queda no meio do lote · 422 do MVP · token inválido · arquivo vazio, inválido ou em formato errado · fonte externa fora · execução concorrente · erro inesperado (ver seção 6).</td></tr>
-  <tr><th>Saídas</th><td>Relatos criados e status alterados no MVP · <code>saida/fila_priorizada.json</code> e <code>.csv</code> · <code>saida/indicadores.json</code> · <code>saida/execucoes/&lt;run_id&gt;.json</code> · <code>logs/robo-AAAA-MM-DD.jsonl</code> · arquivos em <code>processados/</code> ou <code>quarentena/</code> · push ntfy.</td></tr>
+  <tr><th>Saídas</th><td>Relatos criados e status alterados no MVP · <code>saida/fila_priorizada.json</code> e <code>.csv</code> · <code>saida/indicadores.json</code> · <code>saida/execucoes/&lt;run_id&gt;.json</code> · <code>logs/robo-AAAA-MM-DD.jsonl</code> · arquivos em <code>processados/</code> ou <code>quarentena/</code> · push ntfy, quando configurado.</td></tr>
 </table>
 
 <h2>4. Tecnologias utilizadas e justificativa</h2>
 <table>
   <tr><th style="width:24%">Tecnologia</th><th>Uso e justificativa</th></tr>
   <tr><td>Python 3.11+ (só biblioteca padrão)</td><td>Todas as fontes têm API, então não há tela para o robô clicar e um RPA de interface (UiPath ou Power Automate Desktop) seria mais frágil. Em Python o robô é versionado, testado no CI e reproduzível sem instalar nada: <code>urllib</code> (HTTP), <code>csv</code>, <code>sqlite3</code> (estado), <code>unittest</code>.</td></tr>
-  <tr><td>GitHub Actions</td><td>Agendador gratuito (cron de hora em hora), segredos protegidos, artefatos de log por execução. É o mesmo CI que a equipe usa no componente de DevOps.</td></tr>
+  <tr><td>GitHub Actions</td><td>Agendador gratuito, segredos protegidos e artefatos de log por execução. Pede uma execução por hora, mas o GitHub espaça as execuções agendadas quando está com carga. É o mesmo CI que a equipe usa no componente de DevOps.</td></tr>
   <tr><td>API FastAPI do MVP</td><td>Contrato de integração real: criar relatos, listar e mudar status com token de gestor.</td></tr>
   <tr><td>OpenStreetMap (Overpass API)</td><td>Dado aberto (ODbL) com hospitais, clínicas, escolas, assistência social e acessos ao metrô do território.</td></tr>
   <tr><td>Open-Meteo</td><td>Previsão de chuva sem chave de API. Com chuva, uma barreira obriga o pedestre a desviar pela rua molhada.</td></tr>
   <tr><td>SQLite local</td><td>Idempotência (impressão digital de cada linha) e cache das fontes externas.</td></tr>
-  <tr><td>ntfy.sh</td><td>Push para o gestor. É o mesmo canal dos alertas de observabilidade do MVP.</td></tr>
+  <tr><td>ntfy.sh</td><td>Push opcional para o gestor, o mesmo serviço dos alertas de observabilidade do MVP. Está implementado e testado, mas <b>desligado em produção</b>: o segredo <code>NTFY_URL</code> não foi configurado, e o log registra <code>notificacao_desativada</code>.</td></tr>
   <tr><td>BPMN 2.0 (bpmn.io)</td><td>Desenho do processo em formato padrão e editável.</td></tr>
 </table>
 
@@ -138,51 +139,72 @@
   <tr><td>Chuva prevista ≥ 5 mm nas próximas 24 h</td><td>+10</td></tr>
   <tr><td>Outros relatos abertos a até 30 m (recorrência)</td><td>+10 cada (teto 20)</td></tr>
 </table>
-<p><b>Classificação:</b> ALTA ≥ 70 (prazo sugerido de 2 dias) · MÉDIA ≥ 45 (7 dias) · BAIXA &lt; 45 (15 dias). Cada item da fila carrega a lista de motivos. Exemplo real da execução contra a produção (os relatos sintéticos de 13/11 viram ALTA quando completam 3 dias abertos; o agendamento de hora em hora faz a mudança sozinho):</p>
-<pre>contexto: chuva 24 h = 0.6 mm · locais sensíveis = 55
+<p><b>Classificação:</b> ALTA ≥ 70 (prazo sugerido de 2 dias) · MÉDIA ≥ 45 (7 dias) · BAIXA &lt; 45 (15 dias). Cada item da fila carrega a lista de motivos. Fila real da execução agendada de 16/11/2026, 20:47 UTC, no GitHub Actions. Com 8,4 mm de chuva previstos, três relatos chegaram a 70 pontos e foram movidos para "em análise". O relato <code>08fc1e17</code> já tinha sido movido em 15/11, por isso aparece como "mantido":</p>
+<pre>contexto: chuva 24 h = 8.4 mm · locais sensíveis = 55
 
-MEDIA score=55  travessia_barreira  id=08fc1e17
+ALTA  score=75  travessia_barreira  id=08fc1e17  ação: mantido
       · categoria travessia_barreira (+35)
+      · aberto há 2 dia(s) (+10)
       · a 52 m de hospital &#x27;Pró Matre Paulista&#x27; (+20)
+      · chuva prevista de 8.4 mm em 24 h (+10)
 
-MEDIA score=50  rampa_bloqueada     id=51b43f6d
+ALTA  score=70  rampa_bloqueada     id=51b43f6d  ação: movido_para_em_analise
       · categoria rampa_bloqueada (+40)
+      · aberto há 2 dia(s) (+10)
       · a 126 m de escola &#x27;Colégio Objetivo&#x27; (+10)
+      · chuva prevista de 8.4 mm em 24 h (+10)
 
-MEDIA score=50  rampa_bloqueada     id=b96eb6ba
+ALTA  score=70  rampa_bloqueada     id=b96eb6ba  ação: movido_para_em_analise
       · categoria rampa_bloqueada (+40)
+      · aberto há 2 dia(s) (+10)
       · a 153 m de acesso ao metrô &#x27;Metro Trianon MASP&#x27; (+10)
+      · chuva prevista de 8.4 mm em 24 h (+10)
 
-MEDIA score=45  calcada_obstruida   id=79465dfd
-      · categoria calcada_obstruida (+25)
-      · a 5 m de acesso ao metrô &#x27;sem nome&#x27; (+20)
-
-MEDIA score=45  calcada_obstruida   id=9489ac27
-      · categoria calcada_obstruida (+25)
-      · a 94 m de escola &#x27;Objetivo&#x27; (+20)
-
-MEDIA score=45  travessia_barreira  id=4280a70d
+ALTA  score=70  travessia_barreira  id=169044d4  ação: movido_para_em_analise
       · categoria travessia_barreira (+35)
-      · a 151 m de acesso ao metrô &#x27;sem nome&#x27; (+10)
+      · aberto há 1 dia(s) (+5)
+      · a 60 m de acesso ao metrô &#x27;Metro Trianon MASP&#x27; (+20)
+      · chuva prevista de 8.4 mm em 24 h (+10)
 
-BAIXA score=35  calcada_obstruida   id=c57d3761
+MEDIA score=65  calcada_obstruida   id=79465dfd  ação: mantido
       · categoria calcada_obstruida (+25)
-      · a 115 m de acesso ao metrô &#x27;Metrò Brigadeiro&#x27; (+10)</pre>
+      · aberto há 2 dia(s) (+10)
+      · a 5 m de acesso ao metrô &#x27;sem nome&#x27; (+20)
+      · chuva prevista de 8.4 mm em 24 h (+10)
+
+MEDIA score=65  calcada_obstruida   id=9489ac27  ação: mantido
+      · categoria calcada_obstruida (+25)
+      · aberto há 2 dia(s) (+10)
+      · a 94 m de escola &#x27;Objetivo&#x27; (+20)
+      · chuva prevista de 8.4 mm em 24 h (+10)
+
+MEDIA score=65  travessia_barreira  id=4280a70d  ação: mantido
+      · categoria travessia_barreira (+35)
+      · aberto há 2 dia(s) (+10)
+      · a 151 m de acesso ao metrô &#x27;sem nome&#x27; (+10)
+      · chuva prevista de 8.4 mm em 24 h (+10)
+
+MEDIA score=55  calcada_obstruida   id=c57d3761  ação: mantido
+      · categoria calcada_obstruida (+25)
+      · aberto há 2 dia(s) (+10)
+      · a 115 m de acesso ao metrô &#x27;Metrò Brigadeiro&#x27; (+10)
+      · chuva prevista de 8.4 mm em 24 h (+10)</pre>
 <h3>5.4 Ação e pessoa no circuito</h3>
-<p>Só relatos <b>ALTA ainda pendentes</b> mudam para <code>em_analise</code>, via <code>PATCH</code> com o token de gestor. O robô <b>nunca</b> marca <code>resolvido</code> nem <code>descartado</code>: essas decisões afetam o cidadão e ficam com uma pessoa. Há um teste automatizado que garante isso.</p>
+<p>Só relatos <b>ALTA ainda pendentes</b> mudam para <code>em_analise</code>, via <code>PATCH</code> com o token de gestor. O robô nunca devolve um relato para <code>pendente</code>: se a chuva passa e o score cai, o relato continua em análise e a fila mostra a prioridade nova. O robô <b>nunca</b> marca <code>resolvido</code> nem <code>descartado</code>: essas decisões afetam o cidadão e ficam com uma pessoa. Há um teste automatizado que garante isso.</p>
 
 <h2>6. Tratamento de exceções e recuperação</h2>
 <table>
   <tr><th style="width:32%">Falha prevista</th><th>Reação do robô</th></tr>
-  <tr><td>MVP fora do ar, timeout ou HTTP 5xx/429</td><td>3 tentativas com backoff exponencial (2 s, 4 s). Se persistir: status <b>FALHA</b>, código de saída 1 (a execução fica vermelha no Actions), push para o gestor, e o arquivo continua na entrada.</td></tr>
+  <tr><td>MVP fora do ar, timeout ou HTTP 5xx/429</td><td>3 tentativas com backoff exponencial (2 s, 4 s). Se persistir: status <b>FALHA</b>, código de saída 1 (a execução fica vermelha no Actions e o GitHub avisa por e-mail quem mantém o workflow), push se <code>NTFY_URL</code> estiver configurado, e o arquivo continua na entrada.</td></tr>
   <tr><td>MVP cai no meio de um lote</td><td>Interrompe e mantém o arquivo. As linhas já enviadas ficam registradas, então na próxima execução só as restantes são enviadas.</td></tr>
   <tr><td>MVP recusa a linha (422)</td><td>Registra o motivo, marca a linha como rejeitada e segue.</td></tr>
   <tr><td>Token de gestor inválido (401/403)</td><td>FALHA explícita <code>token_invalido</code>, sem novas tentativas.</td></tr>
   <tr><td>Token ausente</td><td>Prioriza e grava a fila, mas não altera status. Alerta no log.</td></tr>
   <tr><td>Arquivo vazio, sem colunas obrigatórias, binário ou <code>.xlsx</code></td><td>Vai para <code>entrada/quarentena/</code> com um arquivo <code>.motivo.txt</code>. Os demais arquivos seguem.</td></tr>
   <tr><td>Dados duplicados ou inconsistentes</td><td>Duplicata ignorada com referência ao relato existente. Coordenada fora do território, impossível ou categoria desconhecida são rejeitadas com motivo.</td></tr>
-  <tr><td>Open-Meteo fora</td><td>Degrada: segue sem o fator chuva e registra <code>fatores_indisponiveis</code> na fila.</td></tr>
-  <tr><td>Overpass (OSM) fora</td><td>Tenta o espelho, depois o cache local (7 dias), depois o snapshot versionado em <code>dados/</code>, e só então segue sem o fator. Isso aconteceu de verdade durante o desenvolvimento: o Overpass devolveu 502 e timeout.</td></tr>
+  <tr><td>Open-Meteo fora</td><td>Degrada: segue sem o fator chuva e registra <code>fatores_indisponiveis</code> na fila. Aconteceu na execução agendada de 17/11: três timeouts de conexão, e a triagem seguiu com status SUCESSO_COM_ALERTAS.</td></tr>
+  <tr><td>Overpass (OSM) fora</td><td>Tenta o espelho, depois o cache local (7 dias), depois o snapshot versionado em <code>dados/</code>, e só então segue sem o fator. Aconteceu na execução real de 14/11: o Overpass devolveu 502 e 504, e o espelho respondeu.</td></tr>
+  <tr><td>Push para o gestor falha</td><td>Alerta <code>notificacao_falhou</code> no log e status SUCESSO_COM_ALERTAS. A mudança de status no MVP já foi feita.</td></tr>
   <tr><td>Execução concorrente</td><td>Trava em arquivo: a segunda execução é ignorada, com registro. Trava esquecida há mais de 30 min é liberada.</td></tr>
   <tr><td>Erro inesperado</td><td>Capturado no orquestrador, registrado com o tipo e terminado com status FALHA. <b>Nenhuma falha silenciosa.</b></td></tr>
 </table>
@@ -258,16 +280,25 @@ BAIXA score=35  calcada_obstruida   id=c57d3761
   <tr><th style="width:22%">Direção</th><th>Contrato</th></tr>
   <tr><td>Robô → MVP</td><td><code>POST /api/reports</code> cria os relatos importados · <code>PATCH /api/admin/reports/{id}</code> com <code>{"status":"em_analise"}</code> e <code>Authorization: Bearer &lt;token de gestor&gt;</code>.</td></tr>
   <tr><td>MVP → Robô</td><td><code>GET /health</code> (saúde e versão) · <code>GET /api/config</code> (território) · <code>GET /api/reports</code> (relatos para duplicata e triagem).</td></tr>
-  <tr><td>Robô → gestor e BI</td><td><code>saida/fila_priorizada.json</code> e <code>.csv</code> (fila ordenada com motivos) · <code>saida/indicadores.json</code> (os indicadores de impacto da Ficha Técnica: recebidos, revisados, resolvidos, taxa de resolução, tempo até revisão), escritos de forma atômica.</td></tr>
+  <tr><td>Robô → gestor</td><td><code>saida/fila_priorizada.json</code> e <code>.csv</code> (fila ordenada com motivos) · <code>saida/indicadores.json</code> (recebidos, revisados, resolvidos, taxa de resolução, tempo até revisão). No Actions, ficam como artefato de cada execução. Nenhum outro sistema lê esses arquivos hoje: quem consome o resultado do robô é o MVP, pela API.</td></tr>
 </table>
 <p>O resultado aparece no próprio MVP: os relatos importados viram pins novos no mapa e os de prioridade ALTA passam a "em análise", visível para o cidadão.</p>
+<h3>O que já aconteceu em produção</h3>
+<table>
+  <tr><th style="width:18%">Data (UTC)</th><th style="width:18%">Execução</th><th>O que o robô fez no MVP público</th></tr>
+  <tr><td>14/11/2026 14:01</td><td>Manual, com a planilha de exemplo</td><td>Criou 4 relatos <code>[demonstração]</code>, barrou 1 duplicata, rejeitou 3 linhas, mandou 1 planilha para a quarentena e removeu um telefone (Figura 3).</td></tr>
+  <tr><td>15/11/2026 10:21</td><td>Agendada no Actions</td><td>Moveu <code>08fc1e17</code> para "em análise": travessia a 52 m do hospital Pró Matre, 70 pontos.</td></tr>
+  <tr><td>16/11/2026 20:47</td><td>Agendada no Actions</td><td>Com 8,4 mm de chuva previstos (+10), moveu mais 3 relatos para "em análise", incluindo um enviado pela própria página do MVP em 15/11 (Figura 5).</td></tr>
+</table>
 <figure><img src="../../assets/mvp-mapa-producao.png" alt="MVP Caminho Livre em produção"><figcaption>Figura 2: MVP em produção (https://caminholivre-gs.azurewebsites.net), que o robô consome e atualiza.</figcaption></figure>
 <figure><img src="../../assets/mvp-integracao.png"><figcaption>Figura 3: MVP depois da execução real: os 4 relatos importados pelo robô aparecem no mapa e na lista, marcados como demonstração e com o canal de origem.</figcaption></figure>
-<figure><img src="../../assets/actions-execucao.png"><figcaption>Figura 4: execução agendada no GitHub Actions.</figcaption></figure>
+<figure><img src="../../assets/actions-execucao.png"><figcaption>Figura 4: primeira execução do robô no GitHub Actions (14/11/2026), disparada pelo botão Run workflow.</figcaption></figure>
+<figure><img src="../../assets/mvp-em-analise.png"><figcaption>Figura 5: MVP em 17/11/2026. Os relatos que o robô moveu sozinho nas execuções agendadas aparecem como em_analise.</figcaption></figure>
+<figure><img src="../../assets/actions-agendadas.png"><figcaption>Figura 6: as 10 execuções agendadas de 14/11 a 17/11/2026 (horário de Brasília). O GitHub espaçou as execuções em 3,5 a 10 horas.</figcaption></figure>
 
 <h2 class="quebra">9. Testes realizados</h2>
 <div class="kpis">
-  <div class="kpi"><b>41</b><span>testes automatizados</span></div>
+  <div class="kpi"><b>43</b><span>testes automatizados</span></div>
   <div class="kpi"><b>OK</b><span>resultado da última execução</span></div>
   <div class="kpi"><b>0</b><span>dependências externas</span></div>
   <div class="kpi"><b>CI</b><span>rodam a cada push</span></div>
@@ -300,6 +331,7 @@ BAIXA score=35  calcada_obstruida   id=c57d3761
   <tr><td>Decisão</td><td>recorrencia</td><td>✔ passou</td></tr>
   <tr><td>Decisão</td><td>relato resolvido nao bloqueia novo</td><td>✔ passou</td></tr>
   <tr><td>Decisão</td><td>robo nunca resolve nem descarta</td><td>✔ passou</td></tr>
+  <tr><td>Decisão</td><td>sem ntfy o aviso fica registrado como desativado</td><td>✔ passou</td></tr>
   <tr><td>Decisão</td><td>sem token so prioriza</td><td>✔ passou</td></tr>
   <tr><td>Falha</td><td>arquivo invalido vai para quarentena</td><td>✔ passou</td></tr>
   <tr><td>Falha</td><td>execucao concorrente e ignorada</td><td>✔ passou</td></tr>
@@ -311,13 +343,14 @@ BAIXA score=35  calcada_obstruida   id=c57d3761
   <tr><td>Falha</td><td>overpass fora sem cache usa snapshot versionado</td><td>✔ passou</td></tr>
   <tr><td>Falha</td><td>overpass fora usa cache antigo</td><td>✔ passou</td></tr>
   <tr><td>Falha</td><td>pasta de entrada ausente nao derruba o robo</td><td>✔ passou</td></tr>
+  <tr><td>Falha</td><td>push que falha vira alerta e nao silencio</td><td>✔ passou</td></tr>
   <tr><td>Falha</td><td>token errado termina em falha</td><td>✔ passou</td></tr>
   <tr><td>LGPD</td><td>campos proibidos saem do log</td><td>✔ passou</td></tr>
   <tr><td>LGPD</td><td>contato marca pii e nao entra na descricao</td><td>✔ passou</td></tr>
   <tr><td>LGPD</td><td>dado pessoal nao vai ao mvp nem ao log</td><td>✔ passou</td></tr>
   <tr><td>LGPD</td><td>remove telefone email cpf</td><td>✔ passou</td></tr>
 </table>
-<p>A saída completa está em <code>tests/evidencias/resultado-testes.txt</code>. Também houve execuções contra a produção: em modo simulação, depois real pelo terminal (4 relatos criados, 1 duplicata barrada, 3 linhas rejeitadas, 1 arquivo em quarentena) e real pelo GitHub Actions (status SUCESSO, Figura 4).</p>
+<p>A saída completa está em <code>tests/evidencias/resultado-testes.txt</code>. Também houve execuções contra a produção: em modo simulação, depois real pelo terminal (4 relatos criados, 1 duplicata barrada, 3 linhas rejeitadas, 1 arquivo em quarentena) e real pelo GitHub Actions (status SUCESSO, Figura 4). Desde então, as 10 execuções agendadas até 17/11 terminaram com sucesso (Figura 6).</p>
 
 <h2>10. Segurança e LGPD</h2>
 <ul>

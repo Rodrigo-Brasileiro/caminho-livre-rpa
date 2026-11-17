@@ -22,6 +22,7 @@ test_chuva_forte_sobe_prioridade (test_robo.TestDecisao.test_chuva_forte_sobe_pr
 test_duplicata_de_relato_ja_aberto_nao_e_criada (test_robo.TestDecisao.test_duplicata_de_relato_ja_aberto_nao_e_criada) ... ok
 test_linhas_invalidas_sao_rejeitadas_e_as_validas_seguem (test_robo.TestDecisao.test_linhas_invalidas_sao_rejeitadas_e_as_validas_seguem) ... ok
 test_robo_nunca_resolve_nem_descarta (test_robo.TestDecisao.test_robo_nunca_resolve_nem_descarta) ... ok
+test_sem_ntfy_o_aviso_fica_registrado_como_desativado (test_robo.TestDecisao.test_sem_ntfy_o_aviso_fica_registrado_como_desativado) ... ok
 test_sem_token_so_prioriza (test_robo.TestDecisao.test_sem_token_so_prioriza) ... ok
 test_arquivo_invalido_vai_para_quarentena (test_robo.TestFalha.test_arquivo_invalido_vai_para_quarentena) ... ok
 test_execucao_concorrente_e_ignorada (test_robo.TestFalha.test_execucao_concorrente_e_ignorada) ... ok
@@ -33,6 +34,7 @@ test_overpass_fora_sem_cache_nem_snapshot_segue_sem_o_fator (test_robo.TestFalha
 test_overpass_fora_sem_cache_usa_snapshot_versionado (test_robo.TestFalha.test_overpass_fora_sem_cache_usa_snapshot_versionado) ... ok
 test_overpass_fora_usa_cache_antigo (test_robo.TestFalha.test_overpass_fora_usa_cache_antigo) ... ok
 test_pasta_de_entrada_ausente_nao_derruba_o_robo (test_robo.TestFalha.test_pasta_de_entrada_ausente_nao_derruba_o_robo) ... ok
+test_push_que_falha_vira_alerta_e_nao_silencio (test_robo.TestFalha.test_push_que_falha_vira_alerta_e_nao_silencio) ... ok
 test_token_errado_termina_em_falha (test_robo.TestFalha.test_token_errado_termina_em_falha) ... ok
 test_dado_pessoal_nao_vai_ao_mvp_nem_ao_log (test_robo.TestLgpdNoFluxo.test_dado_pessoal_nao_vai_ao_mvp_nem_ao_log) ... ok
 test_executar_completo_gera_fila_e_indicadores (test_robo.TestSucesso.test_executar_completo_gera_fila_e_indicadores) ... ok
@@ -41,6 +43,6 @@ test_importa_lote_e_move_para_processados (test_robo.TestSucesso.test_importa_lo
 test_simulacao_nao_altera_nada (test_robo.TestSucesso.test_simulacao_nao_altera_nada) ... ok
 
 ----------------------------------------------------------------------
-Ran 41 tests in 11.468s
+Ran 43 tests in 12.586s
 
 OK

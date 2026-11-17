@@ -1,0 +1,17 @@
+{
+  "run_id": "20261116T204750Z-656256",
+  "comando": "executar",
+  "simulacao": false,
+  "inicio": "2026-11-16T20:47:50Z",
+  "fim": "2026-11-16T20:47:53Z",
+  "status": "SUCESSO",
+  "contadores": {
+    "prioridade_alta": 4,
+    "prioridade_media": 4,
+    "relatos_avaliados": 8,
+    "relatos_movidos_em_analise": 3
+  },
+  "alertas": [],
+  "erros": [],
+  "log": "robo-2026-11-16.jsonl"
+}

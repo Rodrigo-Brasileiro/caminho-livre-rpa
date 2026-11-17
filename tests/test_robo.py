@@ -163,8 +163,21 @@ class TestDecisao(BaseRobo):
         self.assertEqual(self.mvp.patches, [])
         self.assertIn("sem_token", self.eventos())
 
+    def test_sem_ntfy_o_aviso_fica_registrado_como_desativado(self):
+        self.mvp.adicionar(-23.5658, -46.6495, "rampa_bloqueada", dias_atras=3)
+        _, resumo = self.rodar("triagem")
+        self.assertIn("notificacao_desativada", self.eventos())
+        self.assertEqual(resumo["status"], SUCESSO)
+
 
 class TestFalha(BaseRobo):
+    def test_push_que_falha_vira_alerta_e_nao_silencio(self):
+        self.mvp.adicionar(-23.5658, -46.6495, "rampa_bloqueada", dias_atras=3)
+        _, resumo = self.rodar("triagem", cfg=self.config(ntfy_url=porta_fechada()))
+        self.assertEqual(self.mvp.patches[0][1], "em_analise")
+        self.assertIn("notificacao_falhou", self.eventos())
+        self.assertEqual(resumo["status"], SUCESSO_COM_ALERTAS)
+
     def test_mvp_fora_do_ar_termina_em_falha_registrada(self):
         self.csv("lote.csv", *LINHAS_OK)
         codigo, resumo = self.rodar(cfg=self.config(mvp_url=porta_fechada()))

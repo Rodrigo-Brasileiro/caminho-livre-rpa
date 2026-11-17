@@ -2,7 +2,7 @@
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="defs_caminho_livre" targetNamespace="https://github.com/caminho-livre/rpa" exporter="caminho-livre-rpa" exporterVersion="1.0">
   <bpmn:error id="erro_indisponivel" name="ServicoIndisponivel" errorCode="SERVICO_INDISPONIVEL" />
   <bpmn:process id="robo_caminho_livre" name="Robô Caminho Livre: importação e triagem" isExecutable="false">
-    <bpmn:startEvent id="inicio" name="A cada hora (GitHub Actions)"><bpmn:outgoing>f_inicio_verificar</bpmn:outgoing><bpmn:timerEventDefinition id="timer_hora"><bpmn:timeCycle>R/PT1H</bpmn:timeCycle></bpmn:timerEventDefinition></bpmn:startEvent>
+    <bpmn:startEvent id="inicio" name="Agendado (GitHub Actions) ou manual"><bpmn:outgoing>f_inicio_verificar</bpmn:outgoing><bpmn:timerEventDefinition id="timer_hora"><bpmn:timeCycle>R/PT1H</bpmn:timeCycle></bpmn:timerEventDefinition></bpmn:startEvent>
     <bpmn:serviceTask id="verificar" name="Verificar MVP no ar (GET /health)"><bpmn:incoming>f_inicio_verificar</bpmn:incoming><bpmn:outgoing>f_verificar_gw_mvp</bpmn:outgoing></bpmn:serviceTask>
     <bpmn:exclusiveGateway id="gw_mvp" name="MVP no ar?"><bpmn:incoming>f_verificar_gw_mvp</bpmn:incoming><bpmn:outgoing>f_gw_mvp_ler_mvp</bpmn:outgoing><bpmn:outgoing>f_gw_mvp_falha</bpmn:outgoing></bpmn:exclusiveGateway>
     <bpmn:serviceTask id="falha" name="Registrar FALHA e avisar gestor"><bpmn:incoming>f_gw_mvp_falha</bpmn:incoming><bpmn:outgoing>f_falha_fim_falha</bpmn:outgoing></bpmn:serviceTask>
@@ -34,7 +34,7 @@
     <bpmn:exclusiveGateway id="gw_mais_relatos" name="Mais relatos?"><bpmn:incoming>f_merge_alta_gw_mais_relatos</bpmn:incoming><bpmn:outgoing>f_gw_mais_relatos_priorizar</bpmn:outgoing><bpmn:outgoing>f_gw_mais_relatos_gravar</bpmn:outgoing></bpmn:exclusiveGateway>
     <bpmn:task id="gravar" name="Gravar fila, indicadores e resumo"><bpmn:incoming>f_gw_mais_relatos_gravar</bpmn:incoming><bpmn:outgoing>f_gravar_gw_houve_alta</bpmn:outgoing></bpmn:task>
     <bpmn:exclusiveGateway id="gw_houve_alta" name="Houve ALTA?"><bpmn:incoming>f_gravar_gw_houve_alta</bpmn:incoming><bpmn:outgoing>f_gw_houve_alta_notificar</bpmn:outgoing><bpmn:outgoing>f_gw_houve_alta_fim</bpmn:outgoing></bpmn:exclusiveGateway>
-    <bpmn:serviceTask id="notificar" name="Notificar gestor (ntfy)"><bpmn:incoming>f_gw_houve_alta_notificar</bpmn:incoming><bpmn:outgoing>f_notificar_fim</bpmn:outgoing></bpmn:serviceTask>
+    <bpmn:serviceTask id="notificar" name="Notificar gestor (ntfy, se configurado)"><bpmn:incoming>f_gw_houve_alta_notificar</bpmn:incoming><bpmn:outgoing>f_notificar_fim</bpmn:outgoing></bpmn:serviceTask>
     <bpmn:endEvent id="fim" name="Fila do gestor atualizada"><bpmn:incoming>f_gw_houve_alta_fim</bpmn:incoming><bpmn:incoming>f_notificar_fim</bpmn:incoming></bpmn:endEvent>
     <bpmn:boundaryEvent id="erro_criar" name="MVP fora após 3 tentativas" attachedToRef="criar"><bpmn:outgoing>f_erro_criar_manter</bpmn:outgoing><bpmn:errorEventDefinition id="def_erro_criar" errorRef="erro_indisponivel" /></bpmn:boundaryEvent>
     <bpmn:boundaryEvent id="erro_fatores" name="Fonte externa fora" attachedToRef="fatores"><bpmn:outgoing>f_erro_fatores_degradar</bpmn:outgoing><bpmn:errorEventDefinition id="def_erro_fatores" errorRef="erro_indisponivel" /></bpmn:boundaryEvent>

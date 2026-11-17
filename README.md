@@ -5,6 +5,8 @@ Disciplina **Robotic Process Automation**, atividade *Do Processo Manual à Auto
 
 Este repositório traz o componente **Automação** do MVP [Caminho Livre](https://caminholivre-gs.azurewebsites.net): um robô em Python que tira do gestor duas tarefas manuais. A primeira é redigitar no mapa os relatos de barreiras que chegam por planilha. A segunda é decidir, relato por relato, o que atacar primeiro.
 
+> **O que é real e o que é cenário.** A triagem roda sozinha no GitHub Actions contra o MVP público e já mudou relatos para "em análise" em produção (evidências [abaixo](#o-que-já-aconteceu-em-produção)). A importação de planilhas também funciona contra o MVP real, mas **não existe convênio com a central 156, vistorias ou ONGs**: esses canais são o cenário que justifica a automação, e a planilha de exemplo é fictícia, com cada linha marcada como `[demonstração]`.
+
 | | |
 |---|---|
 | **MVP (público)** | https://caminholivre-gs.azurewebsites.net |
@@ -36,18 +38,19 @@ Este repositório traz o componente **Automação** do MVP [Caminho Livre](https
 
 | Antes (manual) | Depois (robô) |
 |---|---|
-| A central 156, as vistorias e as ONGs parceiras mandam planilhas. Alguém redigita cada linha no mapa | O robô lê a pasta `entrada/` a cada hora, valida, limpa e cria os relatos pela API |
+| Relatos que chegam fora do app, em planilha (cenário: central 156, vistorias, ONGs). Alguém redigitaria cada linha no mapa | Quem recebe a planilha a coloca em `entrada/` e roda `python rodar.py importar`. O robô valida, limpa e cria os relatos pela API |
 | Planilhas trazem nome e telefone de quem relatou | Dados pessoais são descartados antes do envio (LGPD) |
 | A mesma barreira entra duas vezes, por canais diferentes | Duplicatas a até 15 m, da mesma categoria, são detectadas e não entram |
 | O gestor abre o mapa e decide no olho o que é urgente | Cada relato aberto recebe um score explicável, cruzado com hospitais, escolas, metrô (OpenStreetMap) e previsão de chuva (Open-Meteo) |
-| Casos urgentes esperam alguém perceber | Relatos de prioridade ALTA passam para "em análise" no MVP e o gestor recebe um push |
+| Casos urgentes esperam alguém perceber | A cada execução agendada, relatos de prioridade ALTA ainda pendentes passam para "em análise" no MVP, sem ninguém disparar nada |
 
 ## Arquitetura
 
 ```mermaid
 flowchart LR
-  ag[GitHub Actions<br/>cron de hora em hora] --> robo
-  csv[(entrada/*.csv<br/>156, vistorias, ONGs)] --> robo
+  ag[GitHub Actions<br/>agendado: triagem] --> robo
+  op[Operador<br/>python rodar.py importar] --> robo
+  csv[(entrada/*.csv<br/>planilhas recebidas)] --> robo
   subgraph robo [Robô Python]
     imp[1. Importação<br/>valida, LGPD, deduplica] --> tri[2. Triagem<br/>score explicável]
   end
@@ -57,7 +60,7 @@ flowchart LR
   om[Open-Meteo<br/>chuva 24 h] --> tri
   osm[OpenStreetMap / Overpass<br/>hospitais, escolas, metrô] --> tri
   tri --> fila[(saida/fila_priorizada.json/.csv<br/>saida/indicadores.json)]
-  tri -- push --> ntfy[ntfy.sh<br/>gestor]
+  tri -. push opcional, desligado hoje .-> ntfy[ntfy.sh<br/>gestor]
   robo --> logs[(logs/*.jsonl<br/>saida/execucoes/*.json)]
 ```
 
@@ -67,7 +70,7 @@ flowchart LR
 
 ```bash
 git clone <este repositório> && cd <pasta>
-cp .env.example .env          # opcional: MVP_ADMIN_TOKEN para mudar status, NTFY_URL para push
+cp .env.example .env          # MVP_ADMIN_TOKEN para mudar status; NTFY_URL (opcional) para push
 
 python rodar.py executar --simular   # lê tudo e mostra o que faria, sem alterar o MVP
 python rodar.py executar             # importa entrada/*.csv e faz a triagem
@@ -83,7 +86,13 @@ Código de saída: `0` para SUCESSO ou SUCESSO_COM_ALERTAS, `1` para FALHA. O ag
 
 ### Agendamento (mínima intervenção humana)
 
-`.github/workflows/robo.yml` roda os testes a cada push e, de hora em hora, executa o robô contra o MVP público. O estado de idempotência fica no cache do Actions e os logs e saídas viram artefatos da execução. Segredos do repositório: `MVP_ADMIN_TOKEN` e `NTFY_URL` (opcional).
+`.github/workflows/robo.yml` roda os testes a cada push. Pelo agendamento (`cron: "0 * * * *"`) e pelo botão *Run workflow*, ele também executa o robô contra o MVP público. Os logs e as saídas de cada execução ficam 30 dias como artefato da execução no Actions.
+
+Como funciona na prática:
+
+- **O GitHub não garante o horário.** O cron pede uma execução por hora, mas o GitHub atrasa ou pula execuções agendadas quando está com carga. Entre 14/11 e 17/11/2026 foram 10 execuções agendadas, com intervalos de 3,5 a 10 horas ([print](assets/actions-agendadas.png)). Todas terminaram com sucesso.
+- **No Actions, o robô faz a triagem.** A pasta `entrada/` não é versionada (as planilhas podem ter dados pessoais), então a caixa de entrada no Actions está sempre vazia e o log registra `0 arquivo(s) na caixa de entrada`. A importação roda na máquina de quem recebeu a planilha.
+- **Segredo configurado:** só `MVP_ADMIN_TOKEN`. O `NTFY_URL` não está configurado, então o push para o gestor está desligado. O robô registra `notificacao_desativada` no log. Quando uma execução agendada termina em FALHA, ela fica vermelha no Actions, e o GitHub manda e-mail a quem mantém o workflow (configuração padrão de notificações do GitHub).
 
 ## Estrutura
 
@@ -128,13 +137,13 @@ scripts/             demonstração local
 
 ALTA ≥ 70 (prazo sugerido de 2 dias), MÉDIA ≥ 45 (7 dias), BAIXA < 45 (15 dias). Cada item da fila traz a lista de `motivos`, por exemplo `"a 52 m de hospital 'Pró Matre Paulista' (+20)"`.
 
-**Ação (decisão):** só relatos ALTA ainda pendentes mudam para `em_analise`. **Pessoa no circuito:** o robô nunca marca `resolvido` nem `descartado`. Essas decisões são do gestor.
+**Ação (decisão):** só relatos ALTA ainda pendentes mudam para `em_analise`. O robô nunca devolve um relato para `pendente`: se a chuva passa e o score cai, o relato continua em análise e a fila mostra a prioridade nova. **Pessoa no circuito:** o robô nunca marca `resolvido` nem `descartado`. Essas decisões são do gestor.
 
 ## Exceções e resiliência
 
 | Falha | Como o robô reage |
 |---|---|
-| MVP fora do ar, timeout ou 5xx | 3 tentativas com backoff exponencial (2 s, 4 s). Se persistir: status FALHA, código 1, push para o gestor, e o arquivo fica na entrada |
+| MVP fora do ar, timeout ou 5xx | 3 tentativas com backoff exponencial (2 s, 4 s). Se persistir: status FALHA, código 1 (execução vermelha no Actions), push se `NTFY_URL` estiver configurado, e o arquivo fica na entrada |
 | MVP cai no meio de um lote | Para, mantém o arquivo e, na próxima execução, envia só as linhas que faltaram (idempotência) |
 | MVP recusa uma linha (422) | Registra o motivo, marca a linha como rejeitada e segue com as outras |
 | Token de gestor inválido (401) | FALHA explícita `token_invalido`, sem tentar de novo |
@@ -143,6 +152,7 @@ ALTA ≥ 70 (prazo sugerido de 2 dias), MÉDIA ≥ 45 (7 dias), BAIXA < 45 (15 d
 | Pasta de entrada ausente | Alerta, e a triagem roda mesmo assim |
 | Open-Meteo fora | Segue sem o fator chuva e registra `fatores_indisponiveis` na fila |
 | Overpass (OSM) fora | Tenta um espelho, depois o cache local, depois o snapshot versionado em `dados/`, e só então segue sem o fator |
+| Push para o gestor falha | Alerta `notificacao_falhou` no log e status SUCESSO_COM_ALERTAS. A mudança de status no MVP já foi feita |
 | Duas execuções ao mesmo tempo | Trava em arquivo: a segunda é ignorada, com registro |
 | Erro inesperado | Capturado, registrado com o tipo e terminado com status FALHA. Nada falha em silêncio |
 
@@ -159,11 +169,19 @@ ALTA ≥ 70 (prazo sugerido de 2 dias), MÉDIA ≥ 45 (7 dias), BAIXA < 45 (15 d
 |---|---|
 | Robô → MVP | `POST /api/reports` cria os relatos importados. `PATCH /api/admin/reports/{id}` com `{"status":"em_analise"}` e o token de gestor |
 | MVP → Robô | `GET /health`, `GET /api/config` (território), `GET /api/reports` |
-| Robô → gestor / BI | `saida/fila_priorizada.json` e `.csv` (fila ordenada com motivos) e `saida/indicadores.json` (indicadores de impacto da ficha técnica) |
+| Robô → gestor | `saida/fila_priorizada.json` e `.csv` (fila ordenada com motivos) e `saida/indicadores.json`. No Actions, ficam como artefato de cada execução. Nenhum outro sistema lê esses arquivos hoje: quem consome o resultado do robô é o MVP, pela API |
 
 O resultado pode ser conferido no próprio mapa: os relatos importados aparecem como pins novos e os de prioridade ALTA mudam para "em análise".
 
-Evidências da execução real de 14/11/2026: [MVP com os relatos importados](assets/mvp-integracao.png), [execução no GitHub Actions](assets/actions-execucao.png) e [log da execução](logs/amostras/producao-execucao-real.jsonl).
+### O que já aconteceu em produção
+
+| Data (UTC) | Execução | O que o robô fez no MVP público |
+|---|---|---|
+| 14/11/2026 14:01 | Manual, na máquina da equipe, com a planilha de exemplo | Criou 4 relatos `[demonstração]`, barrou 1 duplicata, rejeitou 3 linhas, mandou 1 planilha para a quarentena e removeu um telefone. O Overpass deu 502/504 e o espelho resolveu ([log](logs/amostras/producao-execucao-real.jsonl), [mapa](assets/mvp-integracao.png)) |
+| 15/11/2026 10:21 | Agendada no Actions | Moveu `08fc1e17` para "em análise": travessia a 52 m do hospital Pró Matre, 70 pontos |
+| 16/11/2026 20:47 | Agendada no Actions | Com 8,4 mm de chuva previstos (+10), moveu mais 3 relatos para "em análise", incluindo um enviado pela própria página do MVP em 15/11 ([log](logs/amostras/producao-agendada-em-analise.jsonl), [fila](logs/amostras/fila_priorizada-producao-agendada.json), [mapa](assets/mvp-em-analise.png)) |
+
+Nas execuções agendadas a importação sempre encontra a caixa vazia (veja o agendamento acima). O que elas fazem é a triagem, que reavalia todos os relatos abertos a cada execução.
 
 ## Testes
 
@@ -171,13 +189,13 @@ Evidências da execução real de 14/11/2026: [MVP com os relatos importados](as
 PYTHONPATH=src:tests python -m unittest discover -s tests -v
 ```
 
-São 41 testes, sem rede externa. Os testes de ponta a ponta usam um MVP falso (`tests/mvp_falso.py`) com as mesmas rotas e regras do MVP real e falhas programáveis.
+São 43 testes, sem rede externa. Os testes de ponta a ponta usam um MVP falso (`tests/mvp_falso.py`) com as mesmas rotas e regras do MVP real e falhas programáveis.
 
 | Cenário | Exemplos |
 |---|---|
 | Sucesso | importação de lote, idempotência, fila e indicadores gerados, modo simulação |
 | Decisão | linhas inválidas rejeitadas com motivo, duplicata, ALTA → em análise e BAIXA mantida, chuva sobe a prioridade, robô nunca resolve nem descarta |
-| Falha | MVP fora, MVP instável que se recupera, queda no meio do lote, quarentena, Open-Meteo fora, Overpass fora (cache e snapshot), token errado, execução concorrente |
+| Falha | MVP fora, MVP instável que se recupera, queda no meio do lote, quarentena, Open-Meteo fora, Overpass fora (cache e snapshot), token errado, execução concorrente, push que falha |
 | LGPD | telefone, e-mail e nome não chegam ao MVP nem ao log |
 
 Saída da última execução em [`tests/evidencias/resultado-testes.txt`](tests/evidencias/resultado-testes.txt).
@@ -189,7 +207,7 @@ Saída da última execução em [`tests/evidencias/resultado-testes.txt`](tests/
 - Os logs não guardam a descrição nem o contato. A idempotência usa um hash dos dados já mascarados.
 - Coordenadas são arredondadas a 4 casas (~11 m), a mesma precisão do MVP.
 - O robô só usa HTTPS para os serviços externos e se identifica com User-Agent próprio.
-- Os dados de exemplo são fictícios e marcados com `[demonstração]`.
+- Os dados de exemplo são fictícios e marcados com `[demonstração]`. Os 4 relatos de demonstração criados em produção podem ser marcados como "descartado" pelo gestor depois da correção.
 
 ## Fontes de dados
 

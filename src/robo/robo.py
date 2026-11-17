@@ -75,8 +75,8 @@ def executar(comando: str = "executar", simulacao: bool = False, cfg: Config | N
         estado.fechar()
         _destravar(cfg)
 
-    resumo = aud.fechar(fatal)
     if fatal:
-        fontes.notificar(cfg, http, "Caminho Livre: robô falhou",
-                         f"Execução {aud.run_id} terminou em FALHA: {aud.erros[-1] if aud.erros else ''}", "high")
+        fontes.avisar_gestor(cfg, http, aud, "execucao", "Caminho Livre: robô falhou",
+                             f"Execução {aud.run_id} terminou em FALHA: {aud.erros[-1] if aud.erros else ''}", "high")
+    resumo = aud.fechar(fatal)
     return (1 if fatal else 0), resumo

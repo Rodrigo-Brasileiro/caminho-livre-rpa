@@ -86,16 +86,32 @@ def converter_overpass(dados: dict) -> list[dict]:
     return pois
 
 
-def notificar(cfg: Config, http: ClienteHttp, titulo: str, mensagem: str, prioridade: str = "default") -> bool:
-    """Push para o gestor via ntfy.sh (o mesmo canal dos alertas de DevOps). Opcional."""
+def notificar(cfg: Config, http: ClienteHttp, titulo: str, mensagem: str, prioridade: str = "default") -> str:
+    """Push para o gestor via ntfy.sh. Opcional: só é enviado quando NTFY_URL está configurado.
+
+    Devolve "desativado", "enviado" ou "falhou", para quem chamou registrar no log.
+    """
     if not cfg.ntfy_url:
-        return False
+        return "desativado"
     import urllib.request
     pedido = urllib.request.Request(cfg.ntfy_url, data=mensagem.encode(), method="POST",
                                     headers={"Title": titulo.encode("ascii", "ignore").decode(),
                                              "Priority": prioridade, "Tags": "wheelchair"})
     try:
         with urllib.request.urlopen(pedido, timeout=cfg.http_timeout):
-            return True
+            return "enviado"
     except OSError:
-        return False
+        return "falhou"
+
+
+def avisar_gestor(cfg: Config, http: ClienteHttp, aud, etapa: str, titulo: str, mensagem: str,
+                  prioridade: str = "default") -> str:
+    """Tenta o push e registra o resultado. Push que falha vira alerta, nunca silêncio."""
+    resultado = notificar(cfg, http, titulo, mensagem, prioridade)
+    if resultado == "enviado":
+        aud.info(etapa, "gestor_notificado", "push enviado via ntfy")
+    elif resultado == "falhou":
+        aud.alerta(etapa, "notificacao_falhou", "push via ntfy não foi entregue")
+    else:
+        aud.info(etapa, "notificacao_desativada", "NTFY_URL não configurado: o aviso fica só no log e no status")
+    return resultado

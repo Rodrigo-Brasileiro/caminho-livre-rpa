@@ -148,11 +148,9 @@ def triar(ex: Execucao) -> dict:
 
     altas = [i for i in itens if i["acao_do_robo"] == "movido_para_em_analise"]
     if altas:
-        enviado = fontes.notificar(ex.cfg, ex.http, "Caminho Livre: prioridade ALTA",
-                                   f"{len(altas)} relato(s) de prioridade ALTA entraram em análise. "
-                                   f"Prazo sugerido: {regras.PRAZO_DIAS['ALTA']} dias.", "high")
-        if enviado:
-            aud.info(ETAPA, "gestor_notificado", "push enviado via ntfy", relatos=len(altas))
+        fontes.avisar_gestor(ex.cfg, ex.http, aud, ETAPA, "Caminho Livre: prioridade ALTA",
+                             f"{len(altas)} relato(s) de prioridade ALTA entraram em análise. "
+                             f"Prazo sugerido: {regras.PRAZO_DIAS['ALTA']} dias.", "high")
     return fila
 
 

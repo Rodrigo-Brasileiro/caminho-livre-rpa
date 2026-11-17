@@ -57,11 +57,12 @@ def log_demo(max_linhas: int = 30) -> str:
 
 
 def exemplo_fila() -> str:
-    fila = json.loads((AMOSTRAS / "fila_priorizada-producao.json").read_text(encoding="utf-8"))
+    fila = json.loads((AMOSTRAS / "fila_priorizada-producao-agendada.json").read_text(encoding="utf-8"))
     partes = [f"contexto: chuva 24 h = {fila['contexto']['chuva_prevista_24h_mm']} mm · "
               f"locais sensíveis = {fila['contexto']['locais_sensiveis_considerados']}"]
     for item in fila["itens"]:
-        partes.append(f"\n{item['prioridade']:<5} score={item['score']:<3} {item['categoria']:<19} id={item['id'][:8]}")
+        partes.append(f"\n{item['prioridade']:<5} score={item['score']:<3} {item['categoria']:<19} id={item['id'][:8]}"
+                      f"  ação: {item['acao_do_robo']}")
         partes += [f"      · {m}" for m in item["motivos"]]
     return html.escape("\n".join(partes))
 
@@ -75,7 +76,9 @@ def resumo_producao() -> str:
 def figura_integracao() -> str:
     extras = []
     for nome, legenda in (("mvp-integracao.png", "Figura 3: MVP depois da execução real: os 4 relatos importados pelo robô aparecem no mapa e na lista, marcados como demonstração e com o canal de origem."),
-                          ("actions-execucao.png", "Figura 4: execução agendada no GitHub Actions.")):
+                          ("actions-execucao.png", "Figura 4: primeira execução do robô no GitHub Actions (14/11/2026), disparada pelo botão Run workflow."),
+                          ("mvp-em-analise.png", "Figura 5: MVP em 17/11/2026. Os relatos que o robô moveu sozinho nas execuções agendadas aparecem como em_analise."),
+                          ("actions-agendadas.png", "Figura 6: as 10 execuções agendadas de 14/11 a 17/11/2026 (horário de Brasília). O GitHub espaçou as execuções em 3,5 a 10 horas.")):
         if (RAIZ / "assets" / nome).exists():
             extras.append(f'<figure><img src="../../assets/{nome}"><figcaption>{legenda}</figcaption></figure>')
     return "\n".join(extras)
