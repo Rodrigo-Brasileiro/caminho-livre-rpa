@@ -1,0 +1,106 @@
+{
+ "origem": "GET https://caminholivre-gs.azurewebsites.net/api/reports",
+ "copiado_em": "2026-11-17T20:59:29Z",
+ "observacao": "Cópia pública dos relatos do MVP em produção, usada para iniciar o MVP falso do demo local. Não tem dado pessoal: as descrições já vêm sanitizadas pelo MVP.",
+ "itens": [
+  {
+   "id": "169044d4-370b-4791-9b75-5771aae84b41",
+   "criado_em": "2026-11-15T20:10:23.565Z",
+   "atualizado_em": "2026-11-16T20:47:52.370Z",
+   "latitude": -23.564,
+   "longitude": -46.6531,
+   "categoria": "travessia_barreira",
+   "descricao_sanitizada": "Travessia do shopping com barreira",
+   "status": "em_analise",
+   "fonte": "cidadao"
+  },
+  {
+   "id": "c57d3761-28da-4a59-a289-60b1428e0f44",
+   "criado_em": "2026-11-14T14:01:16.333Z",
+   "atualizado_em": "2026-11-14T14:01:16.333Z",
+   "latitude": -23.5672,
+   "longitude": -46.6481,
+   "categoria": "calcada_obstruida",
+   "descricao_sanitizada": "Raízes de árvore levantaram o piso [demonstração] (via vistoria)",
+   "status": "pendente",
+   "fonte": "cidadao"
+  },
+  {
+   "id": "4280a70d-3596-4f6d-bdcf-69e6a0dd8ee2",
+   "criado_em": "2026-11-14T14:01:16.219Z",
+   "atualizado_em": "2026-11-14T14:01:16.219Z",
+   "latitude": -23.5617,
+   "longitude": -46.656,
+   "categoria": "travessia_barreira",
+   "descricao_sanitizada": "Faixa de pedestre termina em guia alta [demonstração] (via central_156)",
+   "status": "pendente",
+   "fonte": "cidadao"
+  },
+  {
+   "id": "9489ac27-1d7d-478b-b57d-707a6b43d20b",
+   "criado_em": "2026-11-14T14:01:16.073Z",
+   "atualizado_em": "2026-11-14T14:01:16.073Z",
+   "latitude": -23.5639,
+   "longitude": -46.6508,
+   "categoria": "calcada_obstruida",
+   "descricao_sanitizada": "Banca de jornal ocupa a calçada inteira, cadeirante desvia pela rua [demonstração] (via vistoria)",
+   "status": "pendente",
+   "fonte": "cidadao"
+  },
+  {
+   "id": "b96eb6ba-8da0-422a-8061-2eab5855d503",
+   "criado_em": "2026-11-14T14:01:15.949Z",
+   "atualizado_em": "2026-11-16T20:47:52.818Z",
+   "latitude": -23.5652,
+   "longitude": -46.6531,
+   "categoria": "rampa_bloqueada",
+   "descricao_sanitizada": "Rampa da esquina tomada por caçamba de entulho [demonstração] (via central_156)",
+   "status": "em_analise",
+   "fonte": "cidadao"
+  },
+  {
+   "id": "aabbbfa4-3d28-4833-8867-f657a69ba826",
+   "criado_em": "2026-11-13T23:52:38.723Z",
+   "atualizado_em": "2026-11-13T23:54:10.475Z",
+   "latitude": -23.5645,
+   "longitude": -46.6525,
+   "categoria": "calcada_obstruida",
+   "descricao_sanitizada": "TESTE DE PERSISTENCIA da equipe (sera descartado)",
+   "status": "descartado",
+   "fonte": "cidadao"
+  },
+  {
+   "id": "08fc1e17-06f2-4e9f-92f2-b3c611fc8fcb",
+   "criado_em": "2026-11-13T22:40:35.950Z",
+   "atualizado_em": "2026-11-15T10:21:22.894Z",
+   "latitude": -23.5661,
+   "longitude": -46.6497,
+   "categoria": "travessia_barreira",
+   "descricao_sanitizada": "Canteiro sem rebaixamento (dado de demonstracao)",
+   "status": "em_analise",
+   "fonte": "sintetico"
+  },
+  {
+   "id": "79465dfd-57cc-42bf-9180-f177de24fc8f",
+   "criado_em": "2026-11-13T22:40:35.923Z",
+   "atualizado_em": "2026-11-13T22:40:35.923Z",
+   "latitude": -23.5628,
+   "longitude": -46.6551,
+   "categoria": "calcada_obstruida",
+   "descricao_sanitizada": "Mesas ocupando a calcada (dado de demonstracao)",
+   "status": "pendente",
+   "fonte": "sintetico"
+  },
+  {
+   "id": "51b43f6d-0d6a-4cf5-b645-3c609e017b2d",
+   "criado_em": "2026-11-13T22:40:35.916Z",
+   "atualizado_em": "2026-11-16T20:47:53.268Z",
+   "latitude": -23.5646,
+   "longitude": -46.6522,
+   "categoria": "rampa_bloqueada",
+   "descricao_sanitizada": "Rampa com entulho (dado de demonstracao)",
+   "status": "em_analise",
+   "fonte": "sintetico"
+  }
+ ]
+}

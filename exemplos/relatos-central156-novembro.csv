@@ -1,9 +1,8 @@
-latitude;longitude;categoria;descricao;canal;contato
--23,5652;-46,6531;Rampa;Rampa da esquina tomada por caçamba de entulho [demonstração];Central 156;Sr. Antônio (11) 98888-1234
--23,5639;-46,6508;Calçada obstruída;Banca de jornal ocupa a calçada inteira, cadeirante desvia pela rua [demonstração];Vistoria;
--23,5661;-46,6497;travessia;Canteiro central sem rebaixamento na faixa [demonstração];ONG parceira;contato@ong.org.br
--23,5617;-46,6560;faixa sem rebaixamento;Faixa de pedestre termina em guia alta [demonstração];Central 156;
--23,5672;-46,6481;calcada;Raízes de árvore levantaram o piso [demonstração];Vistoria;
--22,9068;-43,1729;rampa;Relato do Rio de Janeiro enviado por engano [demonstração];Central 156;
--23,5630;-46,6540;buraco no asfalto;Buraco na pista (fora do escopo) [demonstração];Vistoria;
-;-46,6540;rampa;Linha sem latitude [demonstração];Vistoria;
+﻿data;endereco;latitude;longitude;categoria;descricao;canal;contato
+17/11/2026;Rua Santa Branca, perto da maternidade Pró Matre;-23,5655;-46,6490;Rampa;Carro estacionado em cima da rampa de acesso, cadeirante não consegue subir;Central 156;Joana Ribeiro (11) 98888-1234
+17/11/2026;Rua Doutor Seng, em frente ao Hospital IGESP;-23,5612;-46,6512;Calçada obstruída;Obra deixou tapumes ocupando a calçada toda. Morador pede retorno no (11) 97777-0000;Central 156;
+17/11/2026;Av. Paulista, faixa do canteiro central (lado Jardins);-23,5617;-46,6561;travessia;Faixa termina em guia alta, sem rebaixamento;Vistoria;Agente R. Souza
+17/11/2026;Av. Paulista, 960;-23,5650;-46,6515;faixa sem rebaixamento;Travessia sem rampa dos dois lados, idosos descem pela guia;ONG parceira;contato@ong.org.br
+17/11/2026;Alameda Santos, perto da Rua Pamplona;-2,35640;-46,6565;rampa;Rampa quebrada na esquina;Central 156;
+17/11/2026;Av. Paulista, 1318;-23,5630;-46,6540;Buraco na via;Buraco grande na faixa da direita, perto do ponto de ônibus;Central 156;
+17/11/2026;Alameda Santos, em frente à padaria;;;rampa;Rampa da esquina coberta de entulho de obra;Vistoria;

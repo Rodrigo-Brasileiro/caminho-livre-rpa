@@ -72,7 +72,7 @@
 <table>
   <tr><th style="width:26%">Problema do cidadão</th><td>As barreiras são relatadas de forma dispersa e ninguém acompanha se foram resolvidas.</td></tr>
   <tr><th>Problema operacional (alvo desta automação)</th><td>Mesmo com o mapa no ar, dois trabalhos continuam manuais nos bastidores: <b>(1)</b> redigitar no mapa os relatos que chegam fora do app, em planilha, com dados pessoais e duplicatas no meio; <b>(2)</b> olhar relato por relato e decidir, sem critério registrado, o que é urgente.</td></tr>
-  <tr><th>O que é real e o que é cenário</th><td>A triagem roda sozinha no GitHub Actions contra o MVP público e já mudou relatos para "em análise" em produção (seção 8). A importação também funciona contra o MVP real, mas <b>não há convênio com a central 156, vistorias ou ONGs</b>: esses canais são o cenário que justifica a automação, e a planilha de exemplo é fictícia, com cada linha marcada como <code>[demonstração]</code>.</td></tr>
+  <tr><th>O que é real e o que é cenário</th><td>A triagem roda sozinha no GitHub Actions contra o MVP público e já mudou relatos para "em análise" em produção (seção 8). A importação também funciona contra o MVP real, mas <b>não há convênio com a central 156, vistorias ou ONGs</b>: esses canais são o cenário que justifica a automação, e a planilha de exemplo é fictícia, montada com endereços reais do piloto. A demonstração local usa um MVP falso iniciado com a cópia pública dos relatos de produção.</td></tr>
   <tr><th>ODS</th><td>ODS 10 (redução das desigualdades) e ODS 11 (metas 11.2 e 11.7: acesso seguro e inclusivo a espaços públicos).</td></tr>
 </table>
 
@@ -212,37 +212,37 @@ MEDIA score=55  calcada_obstruida   id=c57d3761  ação: mantido
 <h2 class="quebra">7. Logs e evidências de auditoria</h2>
 <p>Cada evento é uma linha JSON em <code>logs/robo-AAAA-MM-DD.jsonl</code> com data e hora UTC, <code>run_id</code>, nível, etapa, evento, mensagem e referência (arquivo e linha, ou id do relato). Cada execução também grava um resumo com início, fim, status, contadores, alertas e erros. Antes de gravar, o robô remove os campos <code>contato</code>, <code>nome</code>, <code>telefone</code>, <code>email</code> e <code>descricao</code> e mascara telefone, e-mail e CPF em qualquer texto.</p>
 <h3>Trecho do log: demonstração local (sucesso, decisão e falha)</h3>
-<pre>12:43:58 INFO  execucao   inicio                 comando=executar simulacao=False
-12:43:58 INFO  execucao   mvp_no_ar              versão teste12
-12:43:58 INFO  importacao inicio                 2 arquivo(s) na caixa de entrada arquivos=2
-12:43:58 WARN  importacao arquivo_quarentena     colunas obrigatórias ausentes: categoria, latitude, longitud
-12:43:58 INFO  importacao dado_pessoal_removido  contato/telefone/e-mail descartado (LGPD) linha=2
-12:43:58 INFO  importacao relato_criado           relato_id=e5039c40 linha=2
-12:43:58 INFO  importacao relato_criado           relato_id=a3589e[r linha=3
-12:43:58 INFO  importacao dado_pessoal_removido  contato/telefone/e-mail descartado (LGPD) linha=4
-12:43:58 INFO  importacao linha_duplicada        já existe relato aberto a até 15 m relato_existente=f2730710 linha=4
-12:43:58 INFO  importacao relato_criado           relato_id=248120bc linha=5
-12:43:58 INFO  importacao relato_criado           relato_id=1c8dfcf3 linha=6
-12:43:58 WARN  importacao linha_rejeitada        fora do território do piloto linha=7
-12:43:58 WARN  importacao linha_rejeitada        categoria desconhecida linha=8
-12:43:58 WARN  importacao linha_rejeitada        coordenada ausente ou não numérica linha=9
-12:43:58 INFO  triagem    inicio                 6 relato(s) aberto(s) de 6 abertos=6
-   ... (13 linhas omitidas) ...
-12:43:58 INFO  importacao linha_ja_processada    resultado anterior: enviado linha=2
-12:43:58 INFO  importacao linha_ja_processada    resultado anterior: enviado linha=3
-12:43:58 INFO  importacao dado_pessoal_removido  contato/telefone/e-mail descartado (LGPD) linha=4
-12:43:58 INFO  importacao linha_ja_processada    resultado anterior: duplicata linha=4
-12:43:58 INFO  importacao linha_ja_processada    resultado anterior: enviado linha=5
-12:43:58 INFO  importacao linha_ja_processada    resultado anterior: enviado linha=6
-12:43:58 WARN  importacao linha_rejeitada        fora do território do piloto linha=7
-12:43:58 WARN  importacao linha_rejeitada        categoria desconhecida linha=8
-12:43:58 WARN  importacao linha_rejeitada        coordenada ausente ou não numérica linha=9
-12:43:58 INFO  execucao   fim                    status=SUCESSO_COM_ALERTAS arquivos_lidos=1 arquivos_processados=1 linhas_com_dado_pessoal_removido=2 linhas_ja_processadas=5 linhas_lidas=8 linhas_rejeitadas=3
-12:43:58 INFO  execucao   inicio                 comando=executar simulacao=False
-12:43:58 WARN  http       nova_tentativa         tentativa 1 falhou (HTTP 503) destino=http://127.0.0.1:43897/health
-12:43:59 WARN  http       nova_tentativa         tentativa 2 falhou (HTTP 503) destino=http://127.0.0.1:43897/health
-12:44:00 ERROR execucao   mvp_indisponivel       http://127.0.0.1:43897/health indisponível após 3 tentativa(
-12:44:00 ERROR execucao   fim                    status=FALHA</pre>
+<pre>21:01:35 INFO  execucao   inicio                 comando=executar simulacao=False
+21:01:35 INFO  execucao   mvp_no_ar              versão teste12
+21:01:35 INFO  importacao inicio                 2 arquivo(s) na caixa de entrada arquivos=2
+21:01:35 WARN  importacao arquivo_quarentena     colunas obrigatórias ausentes: categoria, latitude, longitud
+21:01:35 INFO  importacao dado_pessoal_removido  contato/telefone/e-mail descartado (LGPD) linha=2
+21:01:35 INFO  importacao relato_criado           relato_id=11463979 linha=2
+21:01:35 INFO  importacao dado_pessoal_removido  contato/telefone/e-mail descartado (LGPD) linha=3
+21:01:35 INFO  importacao relato_criado           relato_id=ded6768d linha=3
+21:01:35 INFO  importacao dado_pessoal_removido  contato/telefone/e-mail descartado (LGPD) linha=4
+21:01:35 INFO  importacao linha_duplicada        já existe relato aberto a até 15 m relato_existente=4280a70d linha=4
+21:01:35 INFO  importacao dado_pessoal_removido  contato/telefone/e-mail descartado (LGPD) linha=5
+21:01:35 INFO  importacao relato_criado           relato_id=d7821233 linha=5
+21:01:35 WARN  importacao linha_rejeitada        fora do território do piloto linha=6
+21:01:35 WARN  importacao linha_rejeitada        categoria desconhecida linha=7
+21:01:35 WARN  importacao linha_rejeitada        coordenada ausente ou não numérica linha=8
+   ... (23 linhas omitidas) ...
+21:01:35 INFO  importacao dado_pessoal_removido  contato/telefone/e-mail descartado (LGPD) linha=3
+21:01:35 INFO  importacao linha_ja_processada    resultado anterior: enviado linha=3
+21:01:35 INFO  importacao dado_pessoal_removido  contato/telefone/e-mail descartado (LGPD) linha=4
+21:01:35 INFO  importacao linha_ja_processada    resultado anterior: duplicata linha=4
+21:01:35 INFO  importacao dado_pessoal_removido  contato/telefone/e-mail descartado (LGPD) linha=5
+21:01:35 INFO  importacao linha_ja_processada    resultado anterior: enviado linha=5
+21:01:35 WARN  importacao linha_rejeitada        fora do território do piloto linha=6
+21:01:35 WARN  importacao linha_rejeitada        categoria desconhecida linha=7
+21:01:35 WARN  importacao linha_rejeitada        coordenada ausente ou não numérica linha=8
+21:01:35 INFO  execucao   fim                    status=SUCESSO_COM_ALERTAS arquivos_lidos=1 arquivos_processados=1 linhas_com_dado_pessoal_removido=4 linhas_ja_processadas=4 linhas_lidas=7 linhas_rejeitadas=3
+21:01:35 INFO  execucao   inicio                 comando=executar simulacao=False
+21:01:35 WARN  http       nova_tentativa         tentativa 1 falhou (HTTP 503) destino=http://127.0.0.1:40423/health
+21:01:36 WARN  http       nova_tentativa         tentativa 2 falhou (HTTP 503) destino=http://127.0.0.1:40423/health
+21:01:37 ERROR execucao   mvp_indisponivel       http://127.0.0.1:40423/health indisponível após 3 tentativa(
+21:01:37 ERROR execucao   fim                    status=FALHA</pre>
 <h3>Resumo da execução real contra o MVP em produção (14/11/2026)</h3>
 <pre>{
  &quot;run_id&quot;: &quot;20261114T140115Z-9d54ac&quot;,
@@ -298,7 +298,7 @@ MEDIA score=55  calcada_obstruida   id=c57d3761  ação: mantido
 
 <h2 class="quebra">9. Testes realizados</h2>
 <div class="kpis">
-  <div class="kpi"><b>43</b><span>testes automatizados</span></div>
+  <div class="kpi"><b>44</b><span>testes automatizados</span></div>
   <div class="kpi"><b>OK</b><span>resultado da última execução</span></div>
   <div class="kpi"><b>0</b><span>dependências externas</span></div>
   <div class="kpi"><b>CI</b><span>rodam a cada push</span></div>
@@ -348,6 +348,7 @@ MEDIA score=55  calcada_obstruida   id=c57d3761  ação: mantido
   <tr><td>LGPD</td><td>campos proibidos saem do log</td><td>✔ passou</td></tr>
   <tr><td>LGPD</td><td>contato marca pii e nao entra na descricao</td><td>✔ passou</td></tr>
   <tr><td>LGPD</td><td>dado pessoal nao vai ao mvp nem ao log</td><td>✔ passou</td></tr>
+  <tr><td>LGPD</td><td>nao mascara identificador de relato</td><td>✔ passou</td></tr>
   <tr><td>LGPD</td><td>remove telefone email cpf</td><td>✔ passou</td></tr>
 </table>
 <p>A saída completa está em <code>tests/evidencias/resultado-testes.txt</code>. Também houve execuções contra a produção: em modo simulação, depois real pelo terminal (4 relatos criados, 1 duplicata barrada, 3 linhas rejeitadas, 1 arquivo em quarentena) e real pelo GitHub Actions (status SUCESSO, Figura 4). Desde então, as 10 execuções agendadas até 17/11 terminaram com sucesso (Figura 6).</p>
@@ -360,7 +361,7 @@ MEDIA score=55  calcada_obstruida   id=c57d3761  ação: mantido
   <li><b>Idempotência sem dado pessoal:</b> o hash é calculado sobre os dados já mascarados.</li>
   <li><b>Localização aproximada:</b> coordenadas com 4 casas (~11 m), a mesma precisão do MVP.</li>
   <li><b>Menor privilégio e pessoa no circuito:</b> o robô só move para "em análise". Resolver e descartar ficam com o gestor.</li>
-  <li><b>Transparência:</b> cada prioridade traz os motivos. Os dados de exemplo são fictícios e marcados com <code>[demonstração]</code>.</li>
+  <li><b>Transparência:</b> cada prioridade traz os motivos. As planilhas de exemplo são fictícias e rodam só no MVP falso do demo local. Os relatos de demonstração importados em produção em 14/11 estão marcados com <code>[demonstração]</code>.</li>
   <li><b>Fontes abertas com licença respeitada:</b> OpenStreetMap (ODbL, com atribuição) e Open-Meteo (uso não comercial).</li>
 </ul>
 

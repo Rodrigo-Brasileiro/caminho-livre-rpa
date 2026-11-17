@@ -72,7 +72,7 @@
 <table>
   <tr><th style="width:26%">Problema do cidadão</th><td>As barreiras são relatadas de forma dispersa e ninguém acompanha se foram resolvidas.</td></tr>
   <tr><th>Problema operacional (alvo desta automação)</th><td>Mesmo com o mapa no ar, dois trabalhos continuam manuais nos bastidores: <b>(1)</b> redigitar no mapa os relatos que chegam fora do app, em planilha, com dados pessoais e duplicatas no meio; <b>(2)</b> olhar relato por relato e decidir, sem critério registrado, o que é urgente.</td></tr>
-  <tr><th>O que é real e o que é cenário</th><td>A triagem roda sozinha no GitHub Actions contra o MVP público e já mudou relatos para "em análise" em produção (seção 8). A importação também funciona contra o MVP real, mas <b>não há convênio com a central 156, vistorias ou ONGs</b>: esses canais são o cenário que justifica a automação, e a planilha de exemplo é fictícia, com cada linha marcada como <code>[demonstração]</code>.</td></tr>
+  <tr><th>O que é real e o que é cenário</th><td>A triagem roda sozinha no GitHub Actions contra o MVP público e já mudou relatos para "em análise" em produção (seção 8). A importação também funciona contra o MVP real, mas <b>não há convênio com a central 156, vistorias ou ONGs</b>: esses canais são o cenário que justifica a automação, e a planilha de exemplo é fictícia, montada com endereços reais do piloto. A demonstração local usa um MVP falso iniciado com a cópia pública dos relatos de produção.</td></tr>
   <tr><th>ODS</th><td>ODS 10 (redução das desigualdades) e ODS 11 (metas 11.2 e 11.7: acesso seguro e inclusivo a espaços públicos).</td></tr>
 </table>
 
@@ -209,7 +209,7 @@ $TABELA_TESTES
   <li><b>Idempotência sem dado pessoal:</b> o hash é calculado sobre os dados já mascarados.</li>
   <li><b>Localização aproximada:</b> coordenadas com 4 casas (~11 m), a mesma precisão do MVP.</li>
   <li><b>Menor privilégio e pessoa no circuito:</b> o robô só move para "em análise". Resolver e descartar ficam com o gestor.</li>
-  <li><b>Transparência:</b> cada prioridade traz os motivos. Os dados de exemplo são fictícios e marcados com <code>[demonstração]</code>.</li>
+  <li><b>Transparência:</b> cada prioridade traz os motivos. As planilhas de exemplo são fictícias e rodam só no MVP falso do demo local. Os relatos de demonstração importados em produção em 14/11 estão marcados com <code>[demonstração]</code>.</li>
   <li><b>Fontes abertas com licença respeitada:</b> OpenStreetMap (ODbL, com atribuição) e Open-Meteo (uso não comercial).</li>
 </ul>
 

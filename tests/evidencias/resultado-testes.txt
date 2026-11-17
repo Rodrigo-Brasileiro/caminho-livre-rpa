@@ -4,6 +4,7 @@ test_ponto_a_50m_nao_e_duplicata (test_regras.TestDuplicata.test_ponto_a_50m_nao
 test_relato_resolvido_nao_bloqueia_novo (test_regras.TestDuplicata.test_relato_resolvido_nao_bloqueia_novo) ... ok
 test_campos_proibidos_saem_do_log (test_regras.TestLgpd.test_campos_proibidos_saem_do_log) ... ok
 test_contato_marca_pii_e_nao_entra_na_descricao (test_regras.TestLgpd.test_contato_marca_pii_e_nao_entra_na_descricao) ... ok
+test_nao_mascara_identificador_de_relato (test_regras.TestLgpd.test_nao_mascara_identificador_de_relato) ... ok
 test_remove_telefone_email_cpf (test_regras.TestLgpd.test_remove_telefone_email_cpf) ... ok
 test_alta_rampa_perto_de_hospital_ha_2_dias (test_regras.TestPrioridade.test_alta_rampa_perto_de_hospital_ha_2_dias) ... ok
 test_baixa_calcada_nova_sem_fatores (test_regras.TestPrioridade.test_baixa_calcada_nova_sem_fatores) ... ok
@@ -43,6 +44,6 @@ test_importa_lote_e_move_para_processados (test_robo.TestSucesso.test_importa_lo
 test_simulacao_nao_altera_nada (test_robo.TestSucesso.test_simulacao_nao_altera_nada) ... ok
 
 ----------------------------------------------------------------------
-Ran 43 tests in 12.586s
+Ran 44 tests in 12.455s
 
 OK

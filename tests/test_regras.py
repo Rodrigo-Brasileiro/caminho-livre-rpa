@@ -55,6 +55,11 @@ class TestLgpd(unittest.TestCase):
         self.assertNotIn("@", texto)
         self.assertNotIn("123.456", texto)
 
+    def test_nao_mascara_identificador_de_relato(self):
+        uuid = "0e905123-4073-ad8e-2dfbf09388c4"
+        self.assertEqual(lgpd.mascarar(f"relato {uuid}"), f"relato {uuid}")
+        self.assertEqual(lgpd.mascarar("retorno no 11 97777-0000 ou 11977770000"), "retorno no [removido] ou [removido]")
+
     def test_contato_marca_pii_e_nao_entra_na_descricao(self):
         v = regras.validar_linha({"latitude": "-23.5646", "longitude": "-46.6522", "categoria": "rampa",
                                   "descricao": "Entulho", "contato": "11 99999-0000"}, BBOX)
