@@ -38,12 +38,13 @@ test_pasta_de_entrada_ausente_nao_derruba_o_robo (test_robo.TestFalha.test_pasta
 test_push_que_falha_vira_alerta_e_nao_silencio (test_robo.TestFalha.test_push_que_falha_vira_alerta_e_nao_silencio) ... ok
 test_token_errado_termina_em_falha (test_robo.TestFalha.test_token_errado_termina_em_falha) ... ok
 test_dado_pessoal_nao_vai_ao_mvp_nem_ao_log (test_robo.TestLgpdNoFluxo.test_dado_pessoal_nao_vai_ao_mvp_nem_ao_log) ... ok
+test_demonstracao_marca_os_relatos_criados (test_robo.TestSucesso.test_demonstracao_marca_os_relatos_criados) ... ok
 test_executar_completo_gera_fila_e_indicadores (test_robo.TestSucesso.test_executar_completo_gera_fila_e_indicadores) ... ok
 test_idempotente_rodar_duas_vezes_nao_duplica (test_robo.TestSucesso.test_idempotente_rodar_duas_vezes_nao_duplica) ... ok
 test_importa_lote_e_move_para_processados (test_robo.TestSucesso.test_importa_lote_e_move_para_processados) ... ok
 test_simulacao_nao_altera_nada (test_robo.TestSucesso.test_simulacao_nao_altera_nada) ... ok
 
 ----------------------------------------------------------------------
-Ran 44 tests in 12.455s
+Ran 45 tests in 12.984s
 
 OK

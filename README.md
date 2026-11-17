@@ -76,12 +76,13 @@ python rodar.py executar --simular   # lê tudo e mostra o que faria, sem altera
 python rodar.py executar             # importa entrada/*.csv e faz a triagem
 python rodar.py importar             # só a etapa 1
 python rodar.py triagem              # só a etapa 2
+python rodar.py executar --demonstracao   # marca os relatos criados com [demonstração] (planilhas de exemplo)
 
 python scripts/demo_local.py         # demonstração completa contra um MVP falso local (sucesso, decisão e falha)
 python scripts/demo_local.py --pausar   # o mesmo, esperando Enter entre as cenas (para gravar)
 ```
 
-Para ver a importação sem tocar a produção, use `scripts/demo_local.py`: ele sobe um MVP falso iniciado com a cópia pública dos relatos de produção (`exemplos/mvp-producao-copia.json`) e os locais reais do OpenStreetMap, e importa as planilhas de `exemplos/`. A chuva é simulada com 8,4 mm, o valor real de 16/11. **Não copie as planilhas de exemplo para `entrada/` com o MVP de produção configurado:** elas são fictícias e iriam para o mapa público.
+Para ver a importação sem tocar a produção, use `scripts/demo_local.py`: ele sobe um MVP falso iniciado com a cópia pública dos relatos de produção (`exemplos/mvp-producao-copia.json`) e os locais reais do OpenStreetMap, e importa as planilhas de `exemplos/`. A chuva é simulada com 8,4 mm, o valor real de 16/11. Para importar as planilhas de exemplo no MVP de produção, como no vídeo, use `--demonstracao`: elas são fictícias, e os relatos criados ficam marcados com `[demonstração]` no mapa público. Ensaie antes com `--simular`, que não grava nada.
 
 Código de saída: `0` para SUCESSO ou SUCESSO_COM_ALERTAS, `1` para FALHA. O agendador marca a execução como vermelha quando a saída é `1`.
 
@@ -190,7 +191,7 @@ Nas execuções agendadas a importação sempre encontra a caixa vazia (veja o a
 PYTHONPATH=src:tests python -m unittest discover -s tests -v
 ```
 
-São 44 testes, sem rede externa. Os testes de ponta a ponta usam um MVP falso (`tests/mvp_falso.py`) com as mesmas rotas e regras do MVP real e falhas programáveis.
+São 45 testes, sem rede externa. Os testes de ponta a ponta usam um MVP falso (`tests/mvp_falso.py`) com as mesmas rotas e regras do MVP real e falhas programáveis.
 
 | Cenário | Exemplos |
 |---|---|
@@ -208,7 +209,7 @@ Saída da última execução em [`tests/evidencias/resultado-testes.txt`](tests/
 - Os logs não guardam a descrição nem o contato. A idempotência usa um hash dos dados já mascarados.
 - Coordenadas são arredondadas a 4 casas (~11 m), a mesma precisão do MVP.
 - O robô só usa HTTPS para os serviços externos e se identifica com User-Agent próprio.
-- As planilhas de exemplo são fictícias e só rodam no MVP falso do demo local. Os dados pessoais nelas (nome, telefone, e-mail) são inventados, justamente para mostrar que o robô os descarta. Os 4 relatos de demonstração criados em produção podem ser marcados como "descartado" pelo gestor depois da correção.
+- As planilhas de exemplo são fictícias. No demo local rodam num MVP falso; em produção, só com `--demonstracao`, que marca os relatos criados. Os dados pessoais nelas (nome, telefone, e-mail) são inventados, justamente para mostrar que o robô os descarta. Os 4 relatos de demonstração criados em produção podem ser marcados como "descartado" pelo gestor depois da correção.
 
 ## Fontes de dados
 

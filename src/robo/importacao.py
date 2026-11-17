@@ -24,6 +24,17 @@ class ArquivoInvalido(Exception):
     pass
 
 
+MARCA_DEMONSTRACAO = " [demonstração]"
+
+
+def marcar_demonstracao(ex: Execucao, descricao: str | None) -> str | None:
+    """Com --demonstracao, o relato criado leva a marca [demonstração] para ninguém confundir com um relato real."""
+    if not ex.cfg.marcar_demonstracao:
+        return descricao
+    base = (descricao or "").strip()
+    return (base[:regras.LIMITE_DESCRICAO - len(MARCA_DEMONSTRACAO)] + MARCA_DEMONSTRACAO).strip()
+
+
 def ler_csv(caminho: Path) -> list[dict]:
     bruto = caminho.read_bytes()
     if not bruto.strip():
@@ -136,7 +147,7 @@ def importar(ex: Execucao) -> None:
                                    "categoria": v.categoria, "status": "pendente"})
                 continue
             try:
-                criado = mvp.criar(v.latitude, v.longitude, v.categoria, v.descricao)
+                criado = mvp.criar(v.latitude, v.longitude, v.categoria, marcar_demonstracao(ex, v.descricao))
             except ErroHttp as erro:  # 4xx: o MVP recusou o conteúdo
                 aud.alerta(ETAPA, "linha_recusada_pelo_mvp", f"HTTP {erro.status}: {erro.detalhe}", **ref)
                 aud.contar("linhas_recusadas_mvp")

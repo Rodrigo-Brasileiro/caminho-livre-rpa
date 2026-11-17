@@ -73,6 +73,11 @@ class TestSucesso(BaseRobo):
         self.assertFalse((self.entrada / "lote.csv").exists())
         self.assertEqual(len(list((self.entrada / "processados").glob("*lote.csv"))), 1)
 
+    def test_demonstracao_marca_os_relatos_criados(self):
+        self.csv("lote.csv", LINHAS_OK[0])
+        self.rodar("importar", cfg=self.config(marcar_demonstracao=True))
+        self.assertTrue(self.mvp.relatos[-1]["descricao_sanitizada"].endswith("[demonstração]"))
+
     def test_idempotente_rodar_duas_vezes_nao_duplica(self):
         self.csv("lote.csv", *LINHAS_OK)
         self.rodar("importar")

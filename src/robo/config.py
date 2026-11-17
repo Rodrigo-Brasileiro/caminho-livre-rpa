@@ -46,6 +46,7 @@ class Config:
     http_tentativas: int = 3
     http_backoff: float = 2.0
     cache_pois_horas: int = 24 * 7
+    marcar_demonstracao: bool = False  # acrescenta [demonstração] à descrição dos relatos criados
 
     @classmethod
     def do_ambiente(cls) -> "Config":
@@ -63,4 +64,5 @@ class Config:
             http_timeout=float(os.getenv("HTTP_TIMEOUT", "15")),
             http_tentativas=int(os.getenv("HTTP_TENTATIVAS", "3")),
             http_backoff=float(os.getenv("HTTP_BACKOFF", "2")),
+            marcar_demonstracao=os.getenv("ROBO_DEMONSTRACAO", "").lower() in ("1", "true", "sim"),
         )
