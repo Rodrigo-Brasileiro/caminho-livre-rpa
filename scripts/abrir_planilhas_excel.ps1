@@ -58,4 +58,17 @@ foreach ($nome in $arquivos) {
     $janela.FreezePanes = $true
     $ws.Range("A1").Select() | Out-Null
 }
+
+# Junta as duas na mesma janela, uma aba por arquivo (o nome da aba é o nome do arquivo).
+# É só visual: para o robô continuam sendo dois arquivos CSV, e a quarentena vale para o arquivo inteiro.
+$principal = $excel.Workbooks.Item($arquivos[1])
+$outra = $excel.Workbooks.Item($arquivos[0])
+$outra.Worksheets.Item(1).Copy([Type]::Missing, $principal.Worksheets.Item(1))
+$outra.Close($false)
+$principal.Activate()
+$principal.Worksheets.Item(2).Activate()
+$excel.ActiveWindow.DisplayGridlines = $false
+$excel.ActiveWindow.Zoom = 120
+$principal.Worksheets.Item(1).Activate()
+$principal.Saved = $true
 $excel.DisplayAlerts = $true
