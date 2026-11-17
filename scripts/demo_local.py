@@ -3,7 +3,8 @@
 Sobe um MVP falso (mesmas rotas e regras do Caminho Livre), copia o lote de exemplo para uma pasta
 temporária e roda o robô em 3 cenários: sucesso + decisão, reexecução idempotente e MVP fora do ar.
 
-    python scripts/demo_local.py
+    python scripts/demo_local.py            # roda as 3 cenas direto
+    python scripts/demo_local.py --pausar   # espera Enter antes de cada cena (para gravar o vídeo)
 """
 import shutil
 import sys
@@ -18,7 +19,12 @@ from robo.config import Config  # noqa: E402
 from robo.robo import executar  # noqa: E402
 
 
+PAUSAR = "--pausar" in sys.argv
+
+
 def titulo(texto: str) -> None:
+    if PAUSAR:
+        input(f"\n>>> Enter para a cena: {texto} ")
     print(f"\n{'=' * 78}\n  {texto}\n{'=' * 78}")
 
 
